@@ -1,0 +1,36 @@
+DESCRIPTION: CART model, Mlxtran, CD19- relapse, using ODEs.
+
+
+[LONGITUDINAL]
+
+input = {rBp, rTA0, lTA0, lTN, nMB, eBp, KBp, KBpr, KBpTN,nB0, nTN0, ka, rBn, km, kb, KBn}
+
+nB0={use=regressor}
+
+EQUATION:
+; Initial conditions
+t0 = 0
+nTA_0=0
+nTN_0=nTN0
+nB_0=nB0
+nBn_0=19.88984724
+
+
+
+; Dynamical model
+rTA=nB/(nB+KBpr)*rTA0
+lTA=lTA0
+
+ddt_nB=rBp*nB*(1-nB/nMB)-eBp*nB/(nB+KBp)*nTA
+ddt_nTA=rTA*nTA+ka*nB/(nB+KBpTN)*nTN-lTA*nTA
+ddt_nTN=-ka*nB/(nB+KBpTN)*nTN-lTN*nTN
+ddt_nBn=rBn*nBn*(1-nBn/nMB)+km*nB-eBp/kb*nBn/(nBn+KBn)*nTA
+
+LB=97.19*(nB+nBn)/(nB+nBn+1909)
+
+
+
+OUTPUT:
+output = {nTA, nB, nBn}
+table={LB, nTN}
+

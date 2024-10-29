@@ -1,0 +1,15 @@
+% Codes for CR, NR, CD19+ relapse identifiability analysis:
+dx1/dt=rP*x1*(1-x1/nC)-e*x1/(x1+KP)*x2,
+dx2/dt=x1/(x1+Kr)*rTA*x2+kA*x1/(x1+KA)*x3-lTA*x3,
+dx3/dt=-kA*x1/(x1+kA)*x3-lTN*x3,
+y1=x2,
+y2=x1
+
+% Codes for CD19- relapse identifiability analysis:
+dx1/dt=rP*x1*(1-x1/nC)-e*x1/(x1+KP)*x2,
+dx2/dt=x1/(x1+Kr)*rTA*x2+kA*x1/(x1+KA)*x3-lTA*x3,
+dx3/dt=-kA*x1/(x1+kA)*x3-lTN*x3,
+dx4/dt=rN*x4*(1-x4/nC)+km*x1-e/kb*x4/(x4+KN)*x2,
+y1=x2,
+y2=x1,
+y3=x4
