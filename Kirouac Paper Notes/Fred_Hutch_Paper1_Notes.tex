@@ -1,0 +1,102 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{titlesec}
+
+% Formatting for section headers
+\titleformat{\section}{\bfseries\Large}{\thesection}{1em}{}
+\titleformat{\subsection}{\bfseries\large}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\bfseries\normalsize}{\thesubsubsection}{1em}{}
+
+\title{\textbf{Deconvolution of Clinical Variance in CAR-T Cell Pharmacology and Response}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+This paper investigates the variability in outcomes for CAR-T cell therapies. These therapies have revolutionized cancer treatment but exhibit significant variability in efficacy and toxicity across patients. The study aims to:
+\begin{itemize}
+    \item Understand the mechanisms driving this variability.
+    \item Develop predictive models to guide CAR-T product optimization.
+\end{itemize}
+
+\section*{Methodology}
+
+\subsection*{Mathematical Model}
+\begin{itemize}
+    \item A toggle switch model regulates CAR-T cells transitioning among memory (TM), effector (TE), and exhausted (TX) states based on tumor antigen engagement.
+    \item Parameters were estimated using data from clinical trials, such as Kymriah-treated chronic lymphocytic leukemia (CLL) patients.
+    \item The model was validated across patient response categories: complete responders (CR), partial responders (PR), and non-responders (NR).
+\end{itemize}
+
+\subsection*{Transcriptomic Analysis}
+\begin{itemize}
+    \item Bulk RNA-seq data analyzed pre-infusion CAR-T products for differential gene expression between CR and NR groups.
+    \item Single-cell RNA-seq (scRNA-seq) provided finer insights into heterogeneity, exhaustion, and memory-related gene signatures.
+\end{itemize}
+
+\subsection*{Machine Learning Workflow}
+\begin{itemize}
+    \item Logistic regression classifiers were trained on transcriptomic data to predict CR vs. NR outcomes.
+    \item The model's predictive accuracy was compared to immunophenotyping data (e.g., T cell subpopulations like memory and exhausted cells).
+\end{itemize}
+
+\section*{Results}
+
+\subsection*{Key Determinants of Response}
+\begin{itemize}
+    \item Memory T cell turnover and effector cell cytotoxicity were critical to CAR-T expansion and tumor clearance.
+    \item CRs exhibited higher memory cell function and lower exhaustion markers (e.g., LAG3, PD1) compared to NRs.
+\end{itemize}
+
+\subsection*{Gene Signatures for Response Prediction}
+\begin{itemize}
+    \item CR products were enriched in IL2RB, IL7R, and other memory T cell-related pathways.
+    \item NR products showed heightened DNA damage and p53 signaling pathways, correlating with reduced proliferative and cytotoxic capacities.
+\end{itemize}
+
+\subsection*{Transcriptomic Classifier Performance}
+\begin{itemize}
+    \item The transcriptomic classifier achieved 90\% accuracy for predicting outcomes, outperforming immunophenotyping-based methods (60--83\% accuracy).
+    \item A CAR-T response scorecard highlighted key pathways shared across datasets.
+\end{itemize}
+
+\subsection*{Simulating Dose-Response Variability}
+\begin{itemize}
+    \item Simulations showed that the ratio of CAR-T expansion (Cmax) to tumor burden (B0) predicts response durability.
+    \item Applied the model to other therapies, like Abecma for multiple myeloma, validating its generalizability.
+\end{itemize}
+
+\section*{Discussion}
+
+\subsection*{Clinical Implications}
+\begin{itemize}
+    \item Pre-infusion transcriptomics can guide CAR-T optimization and predict patient outcomes.
+    \item Transitioning to allogeneic CAR-T therapies may reduce variability caused by autologous starting materials.
+\end{itemize}
+
+\subsection*{Future Directions}
+\begin{itemize}
+    \item Expand datasets to validate findings across more CAR-T products and tumor types.
+    \item Incorporate host-intrinsic factors, like immune microenvironment and tumor signaling, into models.
+    \item Use these insights for personalized dose optimization.
+\end{itemize}
+
+\section*{Figures and Highlights}
+\begin{itemize}
+    \item \textbf{Model Outputs:} PCA plots show parameter-driven separation of CR, PR, NR populations.
+    \item \textbf{Gene Signature Analysis:} Heatmaps of pathways differentiating CR and NR products.
+    \item \textbf{Simulations:} Dose-response curves demonstrating relationships between Cmax, tumor burden, and clinical outcomes.
+\end{itemize}
+
+\section*{Conclusion}
+This study integrates mathematical modeling, transcriptomics, and machine learning to elucidate and predict clinical variability in CAR-T therapies. It identifies product-intrinsic factors, such as memory cell function and exhaustion, as critical determinants of efficacy, paving the way for reliable CAR-T designs and individualized treatment strategies.
+
+\end{document}
