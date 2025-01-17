@@ -1,0 +1,188 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage{color}
+
+% Listings settings
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegray},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\title{Monolix Installation Troubleshooting}
+\author{Rohan Pandey + CHATGPT + Chen Poo}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Error Message 1}
+When attempting to install Monolix, the following error was encountered:
+\begin{verbatim}
+The compiler g++ failed with the following errors:
+
+g++ --version: Apple clang version 16.0.0 (clang-1600.0.26.4)
+Target: arm64-apple-darwin24.1.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+
+Please make sure that g++ command works properly and try again
+\end{verbatim}
+
+\section*{Issue 1: Clang vs GCC}
+Apple's \texttt{g++} is actually a wrapper around the \textbf{Clang compiler} and not GCC, which is required by Monolix.
+
+\subsection*{Solution Steps: Install GCC}
+To install GCC via Homebrew, run:
+\begin{lstlisting}[language=bash]
+brew install gcc
+\end{lstlisting}
+This will install the GCC binaries, including \texttt{g++-14}, in \texttt{/opt/homebrew/bin}.
+
+\subsection*{Temporarily Override g++}
+To point \texttt{g++} to the newly installed GCC:
+\begin{lstlisting}[language=bash]
+sudo mv /Library/Developer/CommandLineTools/usr/bin/g++ /Library/Developer/CommandLineTools/usr/bin/g++_backup
+sudo ln -s /opt/homebrew/bin/g++-14 /Library/Developer/CommandLineTools/usr/bin/g++
+\end{lstlisting}
+Verify that the correct \texttt{g++} is now in use:
+\begin{lstlisting}[language=bash]
+/Library/Developer/CommandLineTools/usr/bin/g++ --version
+\end{lstlisting}
+Expected output:
+\begin{verbatim}
+g++ (Homebrew GCC 14.x.x) ...
+\end{verbatim}
+
+\subsection*{Restore Clang After Installation}
+After installing Monolix, restore Clang's \texttt{g++}:
+\begin{lstlisting}[language=bash]
+sudo rm /Library/Developer/CommandLineTools/usr/bin/g++
+sudo mv /Library/Developer/CommandLineTools/usr/bin/g++_backup /Library/Developer/CommandLineTools/usr/bin/g++
+\end{lstlisting}
+
+\section*{Running the Installer in Rosetta 2}
+If Monolix is not fully ARM-compatible, use Rosetta 2 for x86 emulation.
+
+\subsection*{Install Rosetta 2}
+\begin{lstlisting}[language=bash]
+softwareupdate --install-rosetta
+\end{lstlisting}
+
+\subsection*{Open a Rosetta Terminal}
+\begin{enumerate}
+    \item Go to \textbf{Applications > Utilities} and locate the Terminal app.
+    \item Right-click on Terminal, select \textbf{Get Info}, and check \textbf{Open using Rosetta}.
+    \item Open Terminal.
+\end{enumerate}
+
+\subsection*{Run the Installer}
+In the Rosetta-enabled terminal:
+\begin{lstlisting}[language=bash]
+cd /path/to/monolix/installer
+open MonolixSuite2024R1-macosx-installer.app
+\end{lstlisting}
+
+\section*{Error Message 2}
+During module build:
+\begin{verbatim}
+fatal error: 'string' file not found
+#include <string>
+        ^~~~~~~~
+1 error generated.
+\end{verbatim}
+
+\subsection*{Solution Steps}
+\begin{enumerate}
+    \item Ensure you are using GCC instead of Clang:
+    \begin{lstlisting}[language=bash]
+    export CXX=/opt/homebrew/bin/g++-14
+    export CC=/opt/homebrew/bin/gcc-14
+    \end{lstlisting}
+    \item Verify the standard library path. If needed, explicitly add it:
+    \begin{lstlisting}[language=bash]
+    export CXXFLAGS="-I/opt/homebrew/Cellar/gcc/14.0.0/include/c++/14.0.0"
+    \end{lstlisting}
+    \item Clean and rebuild:
+    \begin{lstlisting}[language=bash]
+    cd /Users/rohanpandey/lixoft/monolix/.../build
+    rm -rf *
+    /Applications/MonolixSuite2024R1.app/Contents/Resources/monolixSuite/bin/build
+    \end{lstlisting}
+    \item Run in Rosetta mode if necessary.
+\end{enumerate}
+
+\section*{Final Notes}
+If you still face issues, try installing GCC 13 explicitly:
+\begin{lstlisting}[language=bash]
+brew install gcc@13
+export CXX=/opt/homebrew/opt/gcc@13/bin/g++-13
+export CC=/opt/homebrew/opt/gcc@13/bin/gcc-13
+\end{lstlisting}
+
+\newpage
+
+\section*{Troubleshooting Steps}
+
+When encountering the Monolix error:
+\begin{verbatim}
+fatal error: 'string' file not found
+\end{verbatim}
+
+follow the steps below to ensure that the correct C++ headers are accessible.
+
+\begin{enumerate}
+    \item \textbf{Install or Update Xcode Command Line Tools:}\\
+    Even if you have the full Xcode IDE installed, the Command Line Tools are required. Install them by running:
+    \begin{verbatim}
+xcode-select --install
+    \end{verbatim}
+
+    \item \textbf{Check Your Xcode Path:}\\
+    Confirm that your system is pointing to the correct Xcode version:
+    \begin{verbatim}
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+xcode-select -p
+    \end{verbatim}
+    The \texttt{xcode-select -p} command should return a path ending in \texttt{Developer}.
+
+    \item \textbf{Accept Xcode License and Initialize the Toolchain:}\\
+    If you recently installed or updated Xcode, you may need to accept its license and run the first launch setup:
+    \begin{verbatim}
+sudo xcodebuild -license
+sudo xcodebuild -runFirstLaunch
+    \end{verbatim}
+
+    \item \textbf{Check macOS SDK Paths (If Needed):}\\
+    Verify the availability of the SDK headers:
+    \begin{verbatim}
+ls /Library/Developer/CommandLineTools/SDKs
+    \end{verbatim}
+    If headers are missing, reinstall the Command Line Tools.
+
+    \item \textbf{Rebuild or Relaunch Monolix:}\\
+    After ensuring that your system has proper toolchain access, restart Monolix and attempt to reload the demos.
+\end{enumerate}
+
+These steps should resolve the issue where standard library headers like \texttt{<string>} are not found.
+
+\end{document}
