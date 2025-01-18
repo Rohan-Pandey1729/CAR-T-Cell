@@ -1,0 +1,59 @@
+<DATAFILE>
+
+[FILEINFO]
+file={path='../../../logistic_42.csv'}
+delimiter = comma
+header={ID, time, y}
+
+[CONTENT]
+ID = {use=identifier}
+time = {use=time}
+y = {use=observation, type=continuous}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {K_pop, omega_K, S0_pop, omega_S0, rs_pop, omega_rs}
+
+DEFINITION:
+K = {distribution=normal, typical=K_pop, sd=omega_K}
+S0 = {distribution=normal, typical=S0_pop, sd=omega_S0}
+rs = {distribution=normal, typical=rs_pop, sd=omega_rs}
+
+[LONGITUDINAL]
+input = {a}
+
+file = '../../../model.txt'
+
+DEFINITION:
+y = {distribution=normal, prediction=S, errorModel=constant(a)}
+
+<FIT>
+data = 'y'
+model = y
+
+<PARAMETER>
+K_pop = {value=1000, method=MLE}
+S0_pop = {value=10, method=MLE}
+a = {value=1, method=MLE}
+omega_K = {value=10, method=MLE}
+omega_S0 = {value=1, method=MLE}
+omega_rs = {value=0.01, method=MLE}
+rs_pop = {value=0.1, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(run = false,method = StochasticApproximation)
+logLikelihood(run = false,method = ImportanceSampling)
+
+[PLOTS]
+run = true
+plots = {indfits = {selected = true}, parameterdistribution = {selected = true}, obspred = {selected = true}, covariancemodeldiagnosis = {selected = true}, covariatemodeldiagnosis = {selected = true}, vpc = {selected = true}, residualsscatter = {selected = true}, residualsdistribution = {selected = true}, randomeffects = {selected = true}, saemresults = {selected = true}}
+
+[SETTINGS]
+GLOBAL:
+exportpath = '../../'
+
