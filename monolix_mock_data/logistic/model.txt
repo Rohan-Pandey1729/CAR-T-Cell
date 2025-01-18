@@ -1,0 +1,13 @@
+DESCRIPTION:
+
+[LONGITUDINAL]
+input={rs,S0,K}
+
+EQUATION:
+odeType = stiff
+t_0 = 0
+S_0 = S0
+ddt_S = rs * (1 - S/K) * S
+
+OUTPUT:
+output = {S}
