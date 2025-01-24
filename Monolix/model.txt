@@ -1,0 +1,19 @@
+DESCRIPTION:
+
+[LONGITUDINAL]
+input={rP, nC, e, KP, rTA, Kr, KA, lTA, kA, lTN, rN, km, kb, KN, nP0, nTA0, nTN0, nN0}
+
+EQUATION:
+odeType = stiff
+t_0 = 0
+nP_0 = nP0
+nTA_0 = nTA0
+nTN_0 = nTN0
+nN_0 = nN0
+ddt_nP = rP * (1 - nP / nC) * nP - (e * nP / (nP + KP)) * nTA
+ddt_nTA = rTA * (nP / (nP + Kr)) * nTA + kA * (nP / (nP + KA)) * nTN - lTA * nTA
+ddt_nTN = -kA * (nP / (nP + KA)) * nTN - lTN * nTN
+ddt_nN = rN * (1 - nN / nC) * nN + km * nP - e / kb * nN / (nN + KN) * nTA
+
+OUTPUT:
+output = {nP, nTA, nTN, nN}
