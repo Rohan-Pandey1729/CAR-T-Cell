@@ -1,6 +1,6 @@
 ********************************************************************************
 *                         logistic.mlxtran                                     *
-*                         January 17, 2025 at 17:09:48                         *
+*                         January 17, 2025 at 16:40:35                         *
 *                         Monolix version : 2024R1                             *
 ********************************************************************************
 
@@ -9,20 +9,20 @@ ESTIMATION OF THE POPULATION PARAMETERS ________________________________________
 
 Fixed Effects ----------------------------
 rs_pop   :                           0.147
-S0_pop   :                             8.7
-K_pop    :                             708
+S0_pop   :                            6.77
+K_pop    :                             710
 
 Standard Deviation of the Random Effects -
-omega_rs :                          0.0251
-omega_S0 :                            2.41
-omega_K  :                            31.8
+omega_rs :                          0.0195
+omega_S0 :                           0.692
+omega_K  :                            18.2
 
 Error Model Parameters -------------------
-a        :                            30.5
+a        :                            27.7
 
-Elapsed time (seconds):       45
-Exploratory phase iterations:      297 (Autostop)
-Smoothing phase iterations:        165 (Autostop)
+Elapsed time (seconds):       20
+Exploratory phase iterations:      243 (Autostop)
+Smoothing phase iterations:         94 (Autostop)
 
  _______________________________________________________________________________
 
@@ -33,23 +33,23 @@ ESTIMATION OF THE INDIVIDUAL PARAMETERS ________________________________________
 
 Estimation of the individual parameters by Conditional Distribution ------------
                min            Q1        median            Q3           max  shrinkage(%)
-rs :        0.0775         0.127         0.151         0.164         0.194          6.75
-S0 :           5.8           7.6          8.89          9.67          11.8          39.6
-K  :           657           685           710           725           783          5.97
+rs :         0.105         0.137         0.151         0.161         0.172         -3.81
+S0 :           6.6          6.64          6.71          6.87          7.12          73.7
+K  :           692           701           706           713           744          10.1
 
-Elapsed time (seconds):       10
-Iterations:      110 (Autostop)
+Elapsed time (seconds):      3.7
+Iterations:       76 (Autostop)
 
  -------------------------------------------------------------------------------
 
 
 Estimation of the individual parameters by Conditional Mode --------------------
                min            Q1        median            Q3           max  shrinkage(%)
-rs :        0.0791         0.127         0.152         0.164         0.194          7.08
-S0 :          4.45          7.43          8.79          9.36            11          42.3
-K  :           648           684           709           724           784          5.37
+rs :         0.105         0.137          0.15         0.161         0.172         -2.78
+S0 :          6.52           6.7          6.74          6.89          7.08          74.4
+K  :           691           701           706           713           745          6.46
 
-Elapsed time (seconds):     0.82
+Elapsed time (seconds):     0.12
 
  -------------------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ Elapsed time (seconds):     0.82
 
 
 DATASET INFORMATION
-Number of individuals: 50
-Number of observations (y): 600
+Number of individuals: 10
+Number of observations (y): 119
 Number of doses: 0
 

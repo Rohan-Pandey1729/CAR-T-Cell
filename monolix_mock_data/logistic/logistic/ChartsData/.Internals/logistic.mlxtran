@@ -1,7 +1,7 @@
 <DATAFILE>
 
 [FILEINFO]
-file={path='logistic_42.csv'}
+file={path='../../../logistic50_42.csv'}
 delimiter = comma
 header={ID, time, y}
 
@@ -23,7 +23,7 @@ rs = {distribution=normal, typical=rs_pop, sd=omega_rs}
 [LONGITUDINAL]
 input = {a}
 
-file = 'model.txt'
+file = '../../../model.txt'
 
 DEFINITION:
 y = {distribution=normal, prediction=S, errorModel=constant(a)}
@@ -55,5 +55,5 @@ plots = {indfits = {selected = true}, parameterdistribution = {selected = true},
 
 [SETTINGS]
 GLOBAL:
-exportpath = 'logistic_regression'
+exportpath = '../../'
 
