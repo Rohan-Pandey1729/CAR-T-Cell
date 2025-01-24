@@ -1,0 +1,64 @@
+********************************************************************************
+*                         logistic_regression.mlxtran                          *
+*                         January 17, 2025 at 16:18:19                         *
+*                         Monolix version : 2024R1                             *
+********************************************************************************
+
+
+ESTIMATION OF THE POPULATION PARAMETERS ________________________________________
+
+Fixed Effects ----------------------------
+rs_pop   :                           0.147
+S0_pop   :                            6.77
+K_pop    :                             710
+
+Standard Deviation of the Random Effects -
+omega_rs :                          0.0195
+omega_S0 :                           0.692
+omega_K  :                            18.2
+
+Error Model Parameters -------------------
+a        :                            27.7
+
+Elapsed time (seconds):       12
+Exploratory phase iterations:      243 (Autostop)
+Smoothing phase iterations:         94 (Autostop)
+
+ _______________________________________________________________________________
+
+
+
+ESTIMATION OF THE INDIVIDUAL PARAMETERS ________________________________________
+
+
+Estimation of the individual parameters by Conditional Distribution ------------
+               min            Q1        median            Q3           max  shrinkage(%)
+rs :         0.105         0.137         0.151         0.161         0.172         -3.81
+S0 :           6.6          6.64          6.71          6.87          7.12          73.7
+K  :           692           701           706           713           744          10.1
+
+Elapsed time (seconds):      2.4
+Iterations:       76 (Autostop)
+
+ -------------------------------------------------------------------------------
+
+
+Estimation of the individual parameters by Conditional Mode --------------------
+               min            Q1        median            Q3           max  shrinkage(%)
+rs :         0.105         0.137          0.15         0.161         0.172         -2.78
+S0 :          6.52           6.7          6.74          6.89          7.08          74.4
+K  :           691           701           706           713           745          6.46
+
+Elapsed time (seconds):    0.089
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+DATASET INFORMATION
+Number of individuals: 10
+Number of observations (y): 119
+Number of doses: 0
+
