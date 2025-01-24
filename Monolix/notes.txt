@@ -1,0 +1,11 @@
+Pick K_pop, (S_0)_pop, (r_s)_pop, w_, w_s_0, w_r_s, a (a for error)
+
+Generate k_i, (s_0)_i, (r_s)_i from log-normal distribution
+
+Generate y_ij based on ODE and parameters where:
+
+y_ij = f(t_ij, psi_i) + a*e_ij
+
+ODE: 
+
+dS/dt = r_s(1 - S/K) * S, S(0) = S_0
