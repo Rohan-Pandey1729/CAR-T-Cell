@@ -1,7 +1,7 @@
 <DATAFILE>
 
 [FILEINFO]
-file={path='cart_data_no_noise.csv'}
+file={path='../../cart_data_no_noise.csv'}
 delimiter = comma
 header={time, id, observation, observation_id, observation_type}
 
@@ -39,7 +39,7 @@ rTA = {distribution=logNormal, typical=rTA_pop, sd=omega_rTA}
 [LONGITUDINAL]
 input = {a0, a1, a2, a3}
 
-file = 'model.txt'
+file = '../../model.txt'
 
 DEFINITION:
 y0 = {distribution=normal, prediction=nP, errorModel=constant(a0)}
@@ -107,5 +107,5 @@ plots = {indfits = {selected = true}, parameterdistribution = {selected = true},
 
 [SETTINGS]
 GLOBAL:
-exportpath = 'cart'
+exportpath = '../'
 

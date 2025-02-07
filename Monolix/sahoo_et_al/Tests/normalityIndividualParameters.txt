@@ -1,0 +1,8 @@
+parameter,statistics,p-value,test
+rho,0.97864,0.994365,Shapiro-Wilk
+K,0.931443,0.477868,Shapiro-Wilk
+kappa1,0.936327,0.478771,Shapiro-Wilk
+kappa2,0.898958,0.107317,Shapiro-Wilk
+theta,0.937892,0.483724,Shapiro-Wilk
+X0,0.942616,0.755826,Shapiro-Wilk
+Y0,0.961515,0.990697,Shapiro-Wilk

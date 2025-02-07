@@ -1,0 +1,14 @@
+DESCRIPTION:
+
+[LONGITUDINAL]
+input={rho, K, kappa1, kappa2, theta, X0, Y0}
+
+EQUATION:
+odeType = stiff
+X_0 = X0
+Y_0 = Y0
+ddt_X = rho * X * (1 - X / K) - kappa1 * X * Y
+ddt_Y = kappa2 * X * Y - theta * Y
+
+OUTPUT:
+output = {X, Y}

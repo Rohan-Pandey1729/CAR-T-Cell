@@ -1,0 +1,130 @@
+********************************************************************************
+*                         cart.mlxtran                                         *
+*                         January 24, 2025 at 14:03:47                         *
+*                         Monolix version : 2024R1                             *
+********************************************************************************
+
+
+ESTIMATION OF THE POPULATION PARAMETERS ________________________________________
+
+Fixed Effects ----------------------------
+rP_pop     :                       0.00693
+nC_pop     :                      3.51e+03
+e_pop      :                          26.5
+KP_pop     :                          17.6
+rTA_pop    :                          1.58
+Kr_pop     :                          60.5
+KA_pop     :                          3.86
+lTA_pop    :                         0.117
+kA_pop     :                         0.483
+lTN_pop    :                        0.0978
+rN_pop     :                         0.105
+km_pop     :                      1.84e-05
+kb_pop     :                            11
+KN_pop     :                      1.58e+04
+nP0_pop    :                       2.2e+03
+nTA0_pop   :                            50
+nTN0_pop   :                          16.5
+nN0_pop    :                          19.7
+
+Standard Deviation of the Random Effects -
+omega_rP   :                          2.66
+omega_nC   :                          1.44
+omega_e    :                         0.619
+omega_KP   :                           2.3
+omega_rTA  :                         0.641
+omega_Kr   :                          1.47
+omega_KA   :                          3.41
+omega_lTA  :                        0.0815
+omega_kA   :                          0.65
+omega_lTN  :                        0.0912
+omega_rN   :                         0.159
+omega_km   :                          3.01
+omega_kb   :                         0.674
+omega_KN   :                         0.751
+omega_nP0  :                      3.21e-06
+omega_nTA0 :                      4.43e-05
+omega_nTN0 :                      8.16e-06
+omega_nN0  :                        0.0827
+
+Error Model Parameters -------------------
+a0         :                        0.0317
+a1         :                        0.0108
+a2         :                      0.000569
+a3         :                          1.76
+
+Elapsed time (seconds):  6.4e+02
+Exploratory phase iterations:      500 (Stopped at the maximum number of iterations/auto-stop criteria have not been reached)
+Smoothing phase iterations:        200 (Stopped at the maximum number of iterations)
+
+ _______________________________________________________________________________
+
+
+
+ESTIMATION OF THE INDIVIDUAL PARAMETERS ________________________________________
+
+
+Estimation of the individual parameters by Conditional Distribution ------------
+                 min            Q1        median            Q3           max  shrinkage(%)
+rP   :       0.00271        0.0185        0.0573        0.0987         0.198          47.6
+nC   :      2.01e+03      3.75e+03      8.58e+03       1.2e+04      2.62e+04          49.8
+e    :          16.4          23.8          30.4            39          54.3          53.1
+KP   :          6.83          51.8          89.3           252           406          50.5
+rTA  :          1.24          1.47          1.96          2.29          3.05          59.5
+Kr   :          44.3          57.7           121           240           356          49.3
+KA   :          1.39          6.84          76.7           102           124          53.1
+lTA  :         0.103         0.113         0.116         0.129         0.134         -5.39
+kA   :         0.297         0.465         0.608         0.654           1.1          56.6
+lTN  :        0.0856        0.0878         0.103         0.106         0.107         -5.39
+rN   :        0.0955        0.0986         0.104         0.111         0.122          55.3
+km   :      4.91e-05      0.000105      0.000181      0.000694       0.00931          76.9
+kb   :          8.02          8.94          12.1          15.2          18.3          55.2
+KN   :      8.03e+03      1.57e+04       1.9e+04      2.57e+04      3.28e+04          52.7
+nP0  :       2.2e+03       2.2e+03       2.2e+03       2.2e+03       2.2e+03          96.6
+nTA0 :            50            50            50            50            50          96.5
+nTN0 :          16.5          16.5          16.5          16.5          16.5          96.6
+nN0  :          18.7          19.2          19.6          20.1          20.4          67.2
+
+Elapsed time (seconds):  3.5e+02
+Iterations:      482 (Autostop)
+
+ -------------------------------------------------------------------------------
+
+
+Estimation of the individual parameters by Conditional Mode --------------------
+                 min            Q1        median            Q3           max  shrinkage(%)
+rP   :       0.00115       0.00263       0.00795        0.0141         0.126          49.1
+nC   :           985      1.87e+03      4.36e+03         5e+03      1.66e+04          45.7
+e    :          14.9          20.1          23.9          28.8          35.5          56.4
+KP   :          3.16          8.07          22.7          38.9           146          49.5
+rTA  :          1.15          1.32          1.46          1.76          2.67          58.7
+Kr   :          17.5          37.9          57.3           107           154          52.8
+KA   :          0.46         0.945          4.23            16          33.4          52.8
+lTA  :         0.103         0.113         0.116         0.129         0.134          -5.3
+kA   :         0.304         0.411         0.493         0.617         0.748          58.4
+lTN  :        0.0856        0.0878         0.103         0.106         0.107         -5.32
+rN   :        0.0867        0.0943        0.0993         0.102         0.116          50.7
+km   :      9.96e-06       1.1e-05      1.76e-05      2.36e-05      6.33e-05          80.7
+kb   :          7.72          8.56          10.8          12.8          15.5          62.2
+KN   :      5.72e+03      1.17e+04       1.5e+04      2.17e+04      2.53e+04          39.9
+nP0  :       2.2e+03       2.2e+03       2.2e+03       2.2e+03       2.2e+03          97.2
+nTA0 :            50            50            50            50            50          96.3
+nTN0 :          16.5          16.5          16.5          16.5          16.5          97.9
+nN0  :          17.7          19.3            20          20.9          23.4          7.12
+
+Elapsed time (seconds):      8.9
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+DATASET INFORMATION
+Number of individuals: 10
+Number of observations (obsid 0): 100
+Number of observations (obsid 1): 100
+Number of observations (obsid 2): 100
+Number of observations (obsid 3): 100
+Number of doses: 0
+
