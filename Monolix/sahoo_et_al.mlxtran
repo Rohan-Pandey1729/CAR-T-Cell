@@ -1,7 +1,7 @@
 <DATAFILE>
 
 [FILEINFO]
-file={path='sahoo1_n15_o10_d300.csv'}
+file={path='sahoo1_n15_o10_d300_0.001_normal_errors.csv'}
 delimiter = comma
 header={time, id, observation, observation_id, observation_type}
 
@@ -17,13 +17,13 @@ observation_id = {use=observationtype}
 input = {K_pop, omega_K, X0_pop, omega_X0, Y0_pop, omega_Y0, kappa1_pop, omega_kappa1, kappa2_pop, omega_kappa2, rho_pop, omega_rho, theta_pop, omega_theta}
 
 DEFINITION:
-K = {distribution=logNormal, typical=K_pop, sd=omega_K}
-X0 = {distribution=logNormal, typical=X0_pop, sd=omega_X0}
-Y0 = {distribution=logNormal, typical=Y0_pop, sd=omega_Y0}
-kappa1 = {distribution=logNormal, typical=kappa1_pop, sd=omega_kappa1}
+K = {distribution=normal, typical=K_pop, sd=omega_K}
+X0 = {distribution=normal, typical=X0_pop, sd=omega_X0}
+Y0 = {distribution=normal, typical=Y0_pop, sd=omega_Y0}
+kappa1 = {distribution=normal, typical=kappa1_pop, sd=omega_kappa1}
 kappa2 = {distribution=normal, typical=kappa2_pop, sd=omega_kappa2}
-rho = {distribution=logNormal, typical=rho_pop, sd=omega_rho}
-theta = {distribution=logNormal, typical=theta_pop, sd=omega_theta}
+rho = {distribution=normal, typical=rho_pop, sd=omega_rho}
+theta = {distribution=normal, typical=theta_pop, sd=omega_theta}
 
 [LONGITUDINAL]
 input = {b0, b1}
@@ -43,18 +43,18 @@ K_pop = {value=1000000000, method=MLE}
 X0_pop = {value=130000000, method=MLE}
 Y0_pop = {value=7000000, method=MLE}
 b0 = {value=0.01, method=MLE}
-b1 = {value=0.01, method=MLE}
+b1 = {value=0.1, method=MLE}
 c0 = {value=1, method=FIXED}
 c1 = {value=1, method=FIXED}
 kappa1_pop = {value=0.000000006, method=MLE}
 kappa2_pop = {value=0.00000000003, method=MLE}
-omega_K = {value=0.00007, method=MLE}
-omega_X0 = {value=0.00007, method=MLE}
-omega_Y0 = {value=0.00007, method=MLE}
-omega_kappa1 = {value=0.00007, method=MLE}
+omega_K = {value=100000000, method=MLE}
+omega_X0 = {value=13000000, method=MLE}
+omega_Y0 = {value=1000000, method=MLE}
+omega_kappa1 = {value=0.000000001, method=MLE}
 omega_kappa2 = {value=0.000000000003, method=MLE}
-omega_rho = {value=0.00007, method=MLE}
-omega_theta = {value=0.00007, method=MLE}
+omega_rho = {value=0.01, method=MLE}
+omega_theta = {value=0.000001, method=MLE}
 rho_pop = {value=0.06, method=MLE}
 theta_pop = {value=0.00001, method=MLE}
 

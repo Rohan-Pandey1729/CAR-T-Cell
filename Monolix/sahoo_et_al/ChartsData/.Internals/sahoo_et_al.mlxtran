@@ -1,7 +1,7 @@
 <DATAFILE>
 
 [FILEINFO]
-file={path='../../../sahoo1_n15_o10_d300.csv'}
+file={path='../../../sahoo1_n15_o10_d300_b_err0.001.csv'}
 delimiter = comma
 header={time, id, observation, observation_id, observation_type}
 
@@ -14,48 +14,44 @@ observation_id = {use=observationtype}
 <MODEL>
 
 [INDIVIDUAL]
-input = {K_pop, omega_K, X0_pop, omega_X0, Y0_pop, omega_Y0, kappa1_pop, omega_kappa1, kappa2_pop, omega_kappa2, rho_pop, omega_rho, theta_pop, omega_theta}
+input = {K_pop, X0_pop, omega_X0, Y0_pop, omega_Y0, kappa1_pop, omega_kappa1, kappa2_pop, omega_kappa2, rho_pop, theta_pop, omega_theta}
 
 DEFINITION:
-K = {distribution=logNormal, typical=K_pop, sd=omega_K}
+K = {distribution=logNormal, typical=K_pop, no-variability}
 X0 = {distribution=logNormal, typical=X0_pop, sd=omega_X0}
 Y0 = {distribution=logNormal, typical=Y0_pop, sd=omega_Y0}
 kappa1 = {distribution=logNormal, typical=kappa1_pop, sd=omega_kappa1}
 kappa2 = {distribution=normal, typical=kappa2_pop, sd=omega_kappa2}
-rho = {distribution=logNormal, typical=rho_pop, sd=omega_rho}
+rho = {distribution=logNormal, typical=rho_pop, no-variability}
 theta = {distribution=logNormal, typical=theta_pop, sd=omega_theta}
 
 [LONGITUDINAL]
-input = {b0, b1}
+input = {a1, a0}
 
 file = '../../../model_sahoo_et_al.txt'
 
 DEFINITION:
-y0 = {distribution=normal, prediction=X, errorModel=proportional(b0)}
-y1 = {distribution=normal, prediction=Y, errorModel=proportional(b1)}
+y1 = {distribution=normal, prediction=Y, errorModel=constant(a1)}
+y0 = {distribution=normal, prediction=X, errorModel=constant(a0)}
 
 <FIT>
 data = {'0', '1'}
 model = {y0, y1}
 
 <PARAMETER>
-K_pop = {value=1000000000, method=MLE}
+K_pop = {value=1000000000, method=FIXED}
 X0_pop = {value=130000000, method=MLE}
 Y0_pop = {value=7000000, method=MLE}
-b0 = {value=0.01, method=MLE}
-b1 = {value=0.01, method=MLE}
-c0 = {value=1, method=FIXED}
-c1 = {value=1, method=FIXED}
+a0 = {value=1, method=MLE}
+a1 = {value=1, method=MLE}
 kappa1_pop = {value=0.000000006, method=MLE}
 kappa2_pop = {value=0.00000000003, method=MLE}
-omega_K = {value=0.00007, method=MLE}
-omega_X0 = {value=0.00007, method=MLE}
-omega_Y0 = {value=0.00007, method=MLE}
-omega_kappa1 = {value=0.00007, method=MLE}
-omega_kappa2 = {value=0.000000000003, method=MLE}
-omega_rho = {value=0.00007, method=MLE}
-omega_theta = {value=0.00007, method=MLE}
-rho_pop = {value=0.06, method=MLE}
+omega_X0 = {value=0.2, method=MLE}
+omega_Y0 = {value=0.2, method=MLE}
+omega_kappa1 = {value=0.2, method=MLE}
+omega_kappa2 = {value=0.1, method=MLE}
+omega_theta = {value=1, method=MLE}
+rho_pop = {value=0.06, method=FIXED}
 theta_pop = {value=0.00001, method=MLE}
 
 <MONOLIX>

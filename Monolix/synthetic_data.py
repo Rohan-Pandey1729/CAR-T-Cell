@@ -272,7 +272,7 @@ def generate_sample_csv(
             for obs, time in zip(var_obs, obs_times):
                 obs_dict["time"].append(time)
                 obs_dict["id"].append(indiv_id)
-                obs_dict["observation"].append(obs)
+                obs_dict["observation"].append(np.log(obs) / np.log(10))
                 obs_dict["observation_id"].append(obs_id)
                 obs_dict["observation_type"].append(var_name)
 

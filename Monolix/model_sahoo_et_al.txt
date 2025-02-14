@@ -5,10 +5,12 @@ input={rho, K, kappa1, kappa2, theta, X0, Y0}
 
 EQUATION:
 odeType = stiff
-X_0 = X0
-Y_0 = Y0
-ddt_X = rho * X * (1 - X / K) - kappa1 * X * Y
-ddt_Y = kappa2 * X * Y - theta * Y
+XX_0 = X0
+YY_0 = Y0
+ddt_XX = rho * XX * (1 - XX / K) - kappa1 * XX * YY
+ddt_YY = kappa2 * XX * YY - theta * YY
+X = log10(max(XX, 1e-12))
+Y = log10(max(YY, 1e-12))
 
 OUTPUT:
 output = {X, Y}
