@@ -94,7 +94,7 @@ def generate_mlxtran_file(
             f"y{obs_var.id} = "
             + f"{{distribution={obs_var.error_model_dist_name}, "
             + f"prediction={obs_var.name}, "
-            + f"errorModel={obs_var.error_model_name}({''.join(nonfixed_error_param_names_id)})}}"
+            + f"errorModel={obs_var.error_model_name}({', '.join(nonfixed_error_param_names_id)})}}"
         )
         FIT_data.append(obs_var.id)
         FIT_model.append(f"y{obs_var.id}")
@@ -250,4 +250,4 @@ if __name__ == "__main__":
         "test", "no_exist.csv", "no_exist.txt", model_params, obs_vars
     )
 
-    run_experiment("sahoo_et_al.mlxtran")
+    # run_experiment("sahoo_et_al.mlxtran")
