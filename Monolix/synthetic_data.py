@@ -61,6 +61,8 @@ def sample_parameters(
     after taking the log of the parameter). Does not factor in covariates;
     this should be handled elsewhere if applicable.
 
+    See https://monolixsuite.slp-software.com/monolix/2024R1/individual-model
+
     Args:
     - pop_params: List of mean values for the parameters.
     - distributions: Distribution type to sample the parameters from.
