@@ -16,7 +16,8 @@ type RealToReal = Callable[[float], float]
 
 # (y, t, params) => derivatives
 type ODEModel = Callable[[float, float, list[float]], list[float]]
-type ErrorModel = list[Literal["combined1"] | Literal["combined2"]]
+type ErrorModel = Literal["combined1", "combined2"]
+type ObsFormat = Literal["exact", "log10"]
 
 
 @dataclass
@@ -165,7 +166,7 @@ def generate_sample_csv(
     model: ODEModel,
     pop_param_info: list[tuple[str, float, float, Distribution]],
     obs_var_info: list[
-        tuple[str, float, float, Distribution, ErrorModel, Distribution]
+        tuple[str, float, float, Distribution, ErrorModel, Distribution, ObsFormat]
     ],
     n_indivs: int,
     n_obs: int,
@@ -192,9 +193,13 @@ def generate_sample_csv(
         Each contains the following: \
         (name, avg initial condition, initial condition stdev, \
         initial condition error distribution, \
-        observation error model, observation error distribution). \
+        observation error model, observation error distribution, format). \
         See https://monolixsuite.slp-software.com/monolix/2024R1/observation-error-model
-        for more details about the last two
+        for more details about the observation error model and distribution.
+        Format determines how raw observations will be mapped to observations
+        written to the CSV and returned, where "exact" means CSV observations
+        are exactly raw observations and "log10" means CSV observations
+        are the base-10 log of the raw observations.
     - n_indivs: Number of individuals to generate observations for. \
         Overridden if `obs_times_all` is passed.
     - n_obs: Approximate number of observations to generate per person. \
@@ -215,6 +220,7 @@ def generate_sample_csv(
         init_cond_error_dists,
         obs_error_models,
         obs_error_dists,
+        obs_formats,
     ) = zip(*obs_var_info)
 
     params_and_init_conds = pop_params + init_conds
@@ -266,13 +272,23 @@ def generate_sample_csv(
 
     for obs_id, var_obs_all in enumerate(zip(*observations_all)):
         var_name = obs_var_names[obs_id]
+        obs_format = obs_formats[obs_id]
         for indiv_id, (var_obs, obs_times) in enumerate(
             zip(var_obs_all, obs_times_all)
         ):
             for obs, time in zip(var_obs, obs_times):
+                match obs_format:
+                    case "exact":
+                        obs_formatted = obs
+                    case "log10":
+                        obs_formatted = np.log(obs) / np.log(10)
+                    case _:
+                        raise ValueError(
+                            f"Invalid observation format {obs_format} for variable {var_name}"
+                        )
                 obs_dict["time"].append(time)
                 obs_dict["id"].append(indiv_id)
-                obs_dict["observation"].append(np.log(obs) / np.log(10))
+                obs_dict["observation"].append(obs_formatted)
                 obs_dict["observation_id"].append(obs_id)
                 obs_dict["observation_type"].append(var_name)
 
