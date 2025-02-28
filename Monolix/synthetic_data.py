@@ -90,9 +90,8 @@ def simulate_model(
     initial_conditions_all: list[list[float]],
     obs_times_all: list[list[float]],
     error_models: ErrorModel,
+    error_param_tuples: list[tuple[float, float, float]],
     error_dists: list[Distribution],
-    err_a: float,
-    err_b=0.0,
     err_c=1.0,
     seed=42,
 ) -> list[np.ndarray]:
@@ -103,7 +102,7 @@ def simulate_model(
     and an error model and distribution defining how noise should be
     added to the structural model's predictions. The error model behavior
     and the magnitude of the prediction-observation errors
-    are controlled by three additional parameters; see
+    are controlled by three additional parameters per observation variable; see
     https://monolixsuite.slp-software.com/monolix/2024R1/observation-error-model.
 
     Args:
@@ -113,6 +112,10 @@ def simulate_model(
     - initial_conditions_all: List of lists of initial conditions for each variable
     - obs_times_all: List of lists of times to record observations at
     - error_models: List of error models defining how noise is added to raw predictions
+    - error_param_tuples: List of tuples of error parameters in the order (a, b, c); \
+        a modulates constant error, b modulates proportional error, and c is \
+        an exponent in the proportional error. \
+        See https://monolixsuite.slp-software.com/monolix/2024R1/observation-error-model
     - error_dists: List of distributions to sample errors from
     - err_a: Parameter controlling magnitude of "constant" error
     - err_b: Parameter controlling magnitude of "proportional" error depending on \
@@ -128,7 +131,12 @@ def simulate_model(
         0 < len(sampled_params_all) == len(initial_conditions_all) == len(obs_times_all)
     )
 
-    assert len(initial_conditions_all[0]) == len(error_models) == len(error_dists)
+    assert (
+        len(initial_conditions_all[0])
+        == len(error_models)
+        == len(error_param_tuples)
+        == len(error_dists)
+    )
 
     random.seed(seed)
     # each element of the list below is for an individual
@@ -141,8 +149,8 @@ def simulate_model(
     ]
 
     for observations in observations_all:
-        for row, error_model, error_dist in zip(
-            observations, error_models, error_dists
+        for row, error_model, (err_a, err_b, err_c), error_dist in zip(
+            observations, error_models, error_param_tuples, error_dists
         ):
             for i, _ in enumerate(row):
                 transformed_obs = error_dist.forward(row[i])
@@ -168,14 +176,22 @@ def generate_sample_csv(
     model: ODEModel,
     pop_param_info: list[tuple[str, float, float, Distribution]],
     obs_var_info: list[
-        tuple[str, float, float, Distribution, ErrorModel, Distribution, ObsFormat]
+        tuple[
+            str,
+            float,
+            float,
+            Distribution,
+            ErrorModel,
+            float,
+            float,
+            float,
+            Distribution,
+            ObsFormat,
+        ]
     ],
     n_indivs: int,
     n_obs: int,
     max_day_number: int,
-    err_a: float,
-    err_b: float,
-    err_c=1.0,
     obs_times_all: list[list[int]] = None,
     seed=42,
 ):
@@ -195,23 +211,22 @@ def generate_sample_csv(
         Each contains the following: \
         (name, avg initial condition, initial condition stdev, \
         initial condition error distribution, \
-        observation error model, observation error distribution, format). \
-        See https://monolixsuite.slp-software.com/monolix/2024R1/observation-error-model
-        for more details about the observation error model and distribution.
-        Format determines how raw observations will be mapped to observations
-        written to the CSV and returned, where "exact" means CSV observations
-        are exactly raw observations and "log10" means CSV observations
-        are the base-10 log of the raw observations.
+        observation error model, a, b, c, \
+        observation error distribution, format). \
+        See https://monolixsuite.slp-software.com/monolix/2024R1/observation-error-model \
+        for more details about the observation error model, \
+        the parameters a, b, c, and the error distribution. \
+        Format determines how raw observations will be mapped to observations \
+        written to the CSV and returned, where "exact" means CSV observations \
+        are exactly raw observations, "nonnegative" means CSV observations \
+        are raw observations if nonnegative and zero if negative, and \
+        "log10" means CSV observations are the base-10 log of the raw observations.
     - n_indivs: Number of individuals to generate observations for. \
         Overridden if `obs_times_all` is passed.
     - n_obs: Approximate number of observations to generate per person. \
         Overridden if `obs_times_all` is passed.
     - max_day_number: Last day which might have an observation. \
         Overridden if `obs_times_all` is passed.
-    - err_a: Parameter controlling magnitude of "constant" error
-    - err_b: Parameter controlling magnitude of "proportional" error depending on \
-        observation value
-    - err_c: Exponent of observation value t use in "proportional" errors
     - obs_times_all: List of lists of days to collect observations on
     """
     param_names, pop_params, pop_stds, pop_dists = zip(*pop_param_info)
@@ -221,6 +236,9 @@ def generate_sample_csv(
         init_cond_stds,
         init_cond_error_dists,
         obs_error_models,
+        obs_err_a_vals,
+        obs_err_b_vals,
+        obs_err_c_vals,
         obs_error_dists,
         obs_formats,
     ) = zip(*obs_var_info)
@@ -257,10 +275,8 @@ def generate_sample_csv(
         initial_conditions_all,
         obs_times_all,
         obs_error_models,
+        list(zip(obs_err_a_vals, obs_err_b_vals, obs_err_c_vals)),
         obs_error_dists,
-        err_a,
-        err_b,
-        err_c,
         seed=seed,
     )
 
@@ -282,8 +298,10 @@ def generate_sample_csv(
                 match obs_format:
                     case "exact":
                         obs_formatted = obs
+                    case "nonnegative":
+                        obs_formatted = max(obs, 0)
                     case "log10":
-                        obs_formatted = np.log(obs) / np.log(10)
+                        obs_formatted = np.log(max(obs, 1e-2)) / np.log(10)
                     case _:
                         raise ValueError(
                             f"Invalid observation format {obs_format} for variable {var_name}"
