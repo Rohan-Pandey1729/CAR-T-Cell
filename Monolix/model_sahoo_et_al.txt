@@ -1,7 +1,7 @@
 DESCRIPTION:
 
 [LONGITUDINAL]
-input={r_p, n_c, e, K_p, r_TA, K_r, k_A, K_A, l_TA, l_TN, r_N, n_c_rel, k_m, e_rel, k_b, K_N, X0, Y0, Z0, W0}
+input={r_p, n_c, e, K_p, r_TA, K_r, k_A, K_A, l_TA, l_TN, r_N, k_m, k_b, K_N, X0, Y0, Z0, W0}
 
 EQUATION:
 odeType = stiff
@@ -23,10 +23,10 @@ ddt_ZZ = - k_A * (XX / (XX + K_A)) * ZZ - l_TN * ZZ
 if k_b == 0
 	term = 0
 else
-	term = (e_rel / k_b) * (WW / (WW + K_N)) * YY
+	term = (e / k_b) * (WW / (WW + K_N)) * YY
 end
 
-ddt_WW = r_N * (1 - WW / n_c_rel) * WW + k_m * XX - term
+ddt_WW = r_N * (1 - WW / n_c) * WW + k_m * XX - term
 
 X = XX
 Y = YY
