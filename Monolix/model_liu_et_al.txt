@@ -20,13 +20,18 @@ ddt_YY = r_TA * (XX / (XX + K_r)) * YY + k_A * (XX / (XX + K_A)) * ZZ - l_TA * Y
 ddt_ZZ = - k_A * (XX / (XX + K_A)) * ZZ - l_TN * ZZ
 
 
-term = ifelse(k_b == 0, 0, (e_rel / k_b) * (WW / (WW + K_N)) * YY)
+if k_b == 0
+	term = 0
+else
+	term = (e_rel / k_b) * (WW / (WW + K_N)) * YY
+end
+
 ddt_WW = r_N * (1 - WW / n_c_rel) * WW + k_m * XX - term
 
-X = log10(max(XX, 1e-12))
-Y = log10(max(YY, 1e-12))
-Z = log10(max(ZZ, 1e-12))
-W = log10(max(WW, 1e-12))
+X = XX
+Y = YY
+Z = ZZ
+W = WW
 
 OUTPUT:
 output = {X, Y, Z, W}

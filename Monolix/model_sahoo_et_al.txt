@@ -1,7 +1,7 @@
 DESCRIPTION:
 
 [LONGITUDINAL]
-input={r_p, n_c, e, K_p, r_TA, K_r, k_A, K_A, l_TA, l_TN, r_N, n_c_rel, k_m, e_rel, k_b, K_N, X0, Y0, Z0}
+input={r_p, n_c, e, K_p, r_TA, K_r, k_A, K_A, l_TA, l_TN, r_N, n_c_rel, k_m, e_rel, k_b, K_N, X0, Y0, Z0, W0}
 
 EQUATION:
 odeType = stiff
@@ -10,6 +10,7 @@ odeType = stiff
 XX_0 = X0
 YY_0 = Y0
 ZZ_0 = Z0
+WW_0 = W0
 
 
 ddt_XX = r_p * (1 - XX / n_c) * XX - e * (XX / (XX + K_p)) * YY
@@ -18,9 +19,19 @@ ddt_YY = r_TA * (XX / (XX + K_r)) * YY + k_A * (XX / (XX + K_A)) * ZZ - l_TA * Y
 
 ddt_ZZ = - k_A * (XX / (XX + K_A)) * ZZ - l_TN * ZZ
 
-X = log10(max(XX, 1e-12))
-Y = log10(max(YY, 1e-12))
-Z = log10(max(ZZ, 1e-12))
+
+if k_b == 0
+	term = 0
+else
+	term = (e_rel / k_b) * (WW / (WW + K_N)) * YY
+end
+
+ddt_WW = r_N * (1 - WW / n_c_rel) * WW + k_m * XX - term
+
+X = XX
+Y = YY
+Z = ZZ
+W = WW
 
 OUTPUT:
-output = {X, Y, Z}
+output = {X, Y, Z, W}
