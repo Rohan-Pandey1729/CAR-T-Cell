@@ -174,7 +174,7 @@ def simulate_model(
 def generate_sample_csv(
     save_name: str,
     model: ODEModel,
-    pop_param_info: list[tuple[str, float, float, Distribution]],
+    pop_param_info: list[tuple[str, float, float, Distribution, bool]],
     obs_var_info: list[
         tuple[
             str,
@@ -187,6 +187,7 @@ def generate_sample_csv(
             float,
             Distribution,
             ObsFormat,
+            bool,
         ]
     ],
     n_indivs: int,
@@ -205,14 +206,16 @@ def generate_sample_csv(
         each variable to observe given the time and a set of parameters
     - pop_param_info: List of tuples, each corresponding to a model parameter. \
         Each contains the following: \
-        (name, population mean, population stdev, error distribution). \
+        (name, population mean, population stdev, error distribution, is_fixed). \
+        `is_fixed` is a bool which when False does nothing but when True \
+        sets the population stdev to 0, thus fixing the parameter. \
         See https://monolixsuite.slp-software.com/monolix/2024R1/individual-model
     - obs_var_info: List of tuples, each corresponding to an observed variable. \
         Each contains the following: \
         (name, avg initial condition, initial condition stdev, \
         initial condition error distribution, \
         observation error model, a, b, c, \
-        observation error distribution, format). \
+        observation error distribution, format, is_fixed). \
         See https://monolixsuite.slp-software.com/monolix/2024R1/observation-error-model \
         for more details about the observation error model, \
         the parameters a, b, c, and the error distribution. \
@@ -220,7 +223,9 @@ def generate_sample_csv(
         written to the CSV and returned, where "exact" means CSV observations \
         are exactly raw observations, "nonnegative" means CSV observations \
         are raw observations if nonnegative and zero if negative, and \
-        "log10" means CSV observations are the base-10 log of the raw observations.
+        "log10" means CSV observations are the base-10 log of the raw observations. \
+        `is_fixed` is a bool which when False does nothing but when True \
+        sets the population stdev to 0, thus fixing the parameter. \
     - n_indivs: Number of individuals to generate observations for. \
         Overridden if `obs_times_all` is passed.
     - n_obs: Approximate number of observations to generate per person. \
@@ -229,7 +234,9 @@ def generate_sample_csv(
         Overridden if `obs_times_all` is passed.
     - obs_times_all: List of lists of days to collect observations on
     """
-    param_names, pop_params, pop_stds, pop_dists = zip(*pop_param_info)
+    param_names, pop_params, pop_stds, pop_dists, param_is_fixed_vals = zip(
+        *pop_param_info
+    )
     (
         obs_var_names,
         init_conds,
@@ -241,10 +248,16 @@ def generate_sample_csv(
         obs_err_c_vals,
         obs_error_dists,
         obs_formats,
+        obs_is_fixed_vals,
     ) = zip(*obs_var_info)
 
     params_and_init_conds = pop_params + init_conds
-    param_and_init_cond_stds = pop_stds + init_cond_stds
+    param_and_init_cond_stds = [
+        0 if is_fixed else std for std, is_fixed in zip(pop_stds, param_is_fixed_vals)
+    ] + [
+        0 if is_fixed else std
+        for std, is_fixed in zip(init_cond_stds, obs_is_fixed_vals)
+    ]
     param_and_init_error_dists = pop_dists + init_cond_error_dists
 
     sampled_params_and_init_conds = sample_parameters(
