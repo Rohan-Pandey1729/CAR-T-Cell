@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Callable, Literal
 
 import numpy as np
-import pandas as pd
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
@@ -12,7 +11,6 @@ import matplotlib.pyplot as plt
 RealToReal = Callable[[float], float]
 ODEModel = Callable[[float, float, list[float]], list[float]]
 ErrorModel = Literal["combined1", "combined2"]
-ObsFormat = Literal["exact", "log10"]
 
 @dataclass
 class Distribution:
@@ -52,57 +50,6 @@ def sample_parameters(
         ]
         for _ in range(n_samples)
     ]
-
-def simulate_model(
-    model: ODEModel,
-    sampled_params_all: list[list[float]],
-    initial_conditions_all: list[list[float]],
-    obs_times_all: list[list[float]],
-    error_models: ErrorModel,
-    error_param_tuples: list[tuple[float, float, float]],
-    error_dists: list[Distribution],
-    err_c=1.0,
-    seed=42,
-) -> list[np.ndarray]:
-    """
-    Simulate observations for multiple parameter sets based on a structural model.
-    Noise is added to the simulated (ODE) predictions based on the provided error model,
-    error parameters, and error distributions.
-    """
-    assert (
-        0 < len(sampled_params_all) == len(initial_conditions_all) == len(obs_times_all)
-    )
-    assert (
-        len(initial_conditions_all[0])
-        == len(error_models)
-        == len(error_param_tuples)
-        == len(error_dists)
-    )
-    random.seed(seed)
-    # Each element of the list below corresponds to an individual.
-    # Each returned array is transposed so that rows correspond to variables.
-    observations_all: list[np.ndarray] = [
-        odeint(model, initial_conditions, times, args=(params,)).T
-        for initial_conditions, times, params in zip(
-            initial_conditions_all, obs_times_all, sampled_params_all
-        )
-    ]
-    for observations in observations_all:
-        for row, error_model, (err_a, err_b, err_c), error_dist in zip(
-            observations, error_models, error_param_tuples, error_dists
-        ):
-            for i, _ in enumerate(row):
-                transformed_obs = error_dist.forward(row[i])
-                error = 0.0
-                match error_model:
-                    case "combined1":
-                        error = (err_a + err_b * (transformed_obs ** err_c)) * random.gauss(0, 1)
-                    case "combined2":
-                        error = math.sqrt(err_a**2 + (err_b * (transformed_obs ** err_c))**2) * random.gauss(0, 1)
-                    case _:
-                        raise ValueError(f"Invalid error model {error_model}")
-                row[i] = error_dist.inv(transformed_obs + error)
-    return observations_all
 
 def generate_ground_truth(model: ODEModel, params: list[float], initial_conditions: list[float], obs_times: list[float]) -> np.ndarray:
     """
