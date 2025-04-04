@@ -329,4 +329,10 @@ def generate_sample_csv(
         save_name if save_name.endswith(".csv") else f"{save_name}.csv", index=False
     )
 
-    return obs_times_all, observations_all, obs_dict
+    return (
+        sampled_params_all,
+        initial_conditions_all,
+        obs_times_all,
+        observations_all,
+        obs_dict,
+    )
