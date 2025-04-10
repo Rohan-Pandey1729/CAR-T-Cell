@@ -224,6 +224,8 @@ def generate_sample_csv(
     max_day_number: int,
     obs_times_all: list[list[int]] = None,
     seed=42,
+    param_seed=None,
+    noise_seed=None,
 ):
     """
     Generates and saves a CSV containing observations for multiple individuals
@@ -294,7 +296,7 @@ def generate_sample_csv(
         param_and_init_error_dists,
         param_and_init_cond_stds,
         n_indivs,
-        seed=seed,
+        seed=param_seed or seed,
     )
     sampled_params_all = [x[: len(pop_params)] for x in sampled_params_and_init_conds]
     initial_conditions_all = [
@@ -319,7 +321,7 @@ def generate_sample_csv(
         obs_error_models,
         list(zip(obs_err_a_vals, obs_err_b_vals, obs_err_c_vals)),
         obs_error_dists,
-        seed=seed,
+        seed=noise_seed or seed,
     )
 
     obs_dict = {
