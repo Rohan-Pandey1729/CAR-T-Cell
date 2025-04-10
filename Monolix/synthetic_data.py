@@ -84,6 +84,35 @@ def sample_parameters(
     ]
 
 
+def generate_ground_truths(
+    model: ODEModel,
+    sampled_params_all: list[list[float]],
+    initial_conditions_all: list[list[float]],
+    obs_times_all: list[list[float]],
+) -> np.ndarray:
+    """
+    Generate ground truth timeseries for a multiple patients using an ODE model.
+
+    Args:
+    - model: Function that returns a list of time derivatives for \
+        each variable given the time and a set of parameters
+    - sampled_params_all: List of parameter lists
+    - initial_conditions_all: List of lists of initial conditions for each variable
+    - obs_times_all: List of lists of times to record observations at
+
+    Returns:
+    - List of arrays of observations, where rows in each array represent \
+        a timeseries of observations for a single variable
+    """
+    ground_truths = [
+        odeint(model, initial_conditions, times, args=(params,)).T
+        for initial_conditions, times, params in zip(
+            initial_conditions_all, obs_times_all, sampled_params_all
+        )
+    ]
+    return ground_truths
+
+
 def simulate_model(
     model: ODEModel,
     sampled_params_all: list[list[float]],
