@@ -1,0 +1,45 @@
+DESCRIPTION:
+
+[LONGITUDINAL]
+input={a, b, dE, dC, g, jE, jC, K, k, l, mE, mC, qE, qC, s, KT, KE, KC, gamma, T0, E0, C0, M0}
+
+EQUATION:
+odeType = stiff
+T_0 = T0
+E_0 = E0
+C_0 = C0
+M_0 = M0
+
+CC = max(C, 0)
+EE = max(E, 0)
+
+tol = 1e-10
+
+if T < tol
+    DE = 0
+elseif EE < T
+    DE = dE * (EE / T)^l / (s + (EE / T)^l) * T
+else
+    DE = dE * (1 - s / (s + (T/EE)^(-l))) * T
+end
+
+if T < tol
+    DC = 0
+elseif CC < T
+    DC = dC * (CC / T)^l / (s + (CC / T)^l) * T
+else
+    DC = dC * (1 - s / (s + (T/CC)^(-l))) * T
+end
+
+ddt_T = a * T * (1 - b * T) - DE - DC - KT * (1 - exp(-M)) * T
+ddt_E = g - mE * EE - jE * log((EE + CC) / K) * (DE^2) / (k + DE^2) * EE  - qE * EE * T - KE * (1 - exp(-M)) * EE
+ddt_C = - mC * CC - jC * log((EE + CC) / K) * (DC^2) / (k + DC^2) * CC - qC * CC * T - KC * (1 - exp(-M)) * CC
+ddt_M = - gamma * M
+
+TT = log10(max(T, 1e-2))
+EEE = log10(max(E, 1e-2))
+CCC = log10(max(C, 1e-2))
+MM = log10(max(M, 1e-2))
+
+OUTPUT:
+output = {TT, EEE, CCC, MM}
