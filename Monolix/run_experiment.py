@@ -38,6 +38,7 @@ class MlxObsError:
 @dataclass
 class MlxObsVar(MlxParam, MlxObsError):
     id: int
+    pred_name: str
 
 
 def generate_mlxtran_file(
@@ -100,7 +101,7 @@ def generate_mlxtran_file(
         LONG_DEFINITION_items_.append(
             f"y{obs_var.id} = "
             + f"{{distribution={obs_var.error_model_dist_name}, "
-            + f"prediction={obs_var.name}, "
+            + f"prediction={obs_var.pred_name}, "
             + f"errorModel={obs_var.error_model_name}({', '.join(nonfixed_error_param_names_id)})}}"
         )
         FIT_data.append(obs_var.id)
