@@ -173,6 +173,7 @@ def generate_mlxtran_file(
 
             [SETTINGS]
             GLOBAL:
+            seed = 545331266
             exportpath = '$name'
             """
         )
