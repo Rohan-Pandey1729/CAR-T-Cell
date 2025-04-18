@@ -10,12 +10,13 @@ from dotenv import load_dotenv
 
 @dataclass
 class MlxParam:
-    """Only supports MLE estimation"""
+    """Only supports MLE estimation or fixed"""
 
     name: str
     dist_name: str
     init_est_pop: float
     init_est_sd: float
+    is_fixed: bool
 
 
 @dataclass
@@ -65,14 +66,17 @@ def generate_mlxtran_file(
             f"{model_param.name} = "
             + f"{{distribution={model_param.dist_name}, "
             + f"typical={name_pop}, "
-            + f"sd={omega_name}}}"
+            + (f"sd={omega_name}}}" if not model_param.is_fixed else "no-variability}")
         )
         PARAMETER_items_.append(
-            f"{name_pop} = {{value={model_param.init_est_pop}, method=MLE}}"
+            f"{name_pop} = "
+            + f"{{value={model_param.init_est_pop}, "
+            + f"method={'MLE' if not model_param.is_fixed else 'FIXED'}}}"
         )
-        PARAMETER_items_.append(
-            f"{omega_name} = {{value={model_param.init_est_sd}, method=MLE}}"
-        )
+        if not model_param.is_fixed:
+            PARAMETER_items_.append(
+                f"{omega_name} = {{value={model_param.init_est_sd}, method=MLE}}"
+            )
 
     for obs_var in obs_vars:
         name0 = f"{obs_var.name}0"
@@ -87,7 +91,10 @@ def generate_mlxtran_file(
         INDIVIDUAL_input.append(name_pop)
         INDIVIDUAL_input.append(omega_name)
         INDIV_DEFINITION_items_.append(
-            f"{name0} = {{distribution={obs_var.dist_name}, typical={name_pop}, sd={omega_name}}}"
+            f"{name0} = "
+            + f"{{distribution={obs_var.dist_name}, "
+            + f"typical={name_pop}, "
+            + (f"sd={omega_name}}}" if not obs_var.is_fixed else "no-variability}")
         )
         LONGITUDINAL_input.extend(nonfixed_error_param_names_id)
         LONG_DEFINITION_items_.append(
@@ -99,11 +106,14 @@ def generate_mlxtran_file(
         FIT_data.append(obs_var.id)
         FIT_model.append(f"y{obs_var.id}")
         PARAMETER_items_.append(
-            f"{name_pop} = {{value={obs_var.init_est_pop}, method=MLE}}"
+            f"{name_pop} = "
+            + f"{{value={obs_var.init_est_pop}, "
+            + f"method={'MLE' if not obs_var.is_fixed else 'FIXED'}}}"
         )
-        PARAMETER_items_.append(
-            f"{omega_name} = {{value={obs_var.init_est_sd}, method=MLE}}"
-        )
+        if not obs_var.is_fixed:
+            PARAMETER_items_.append(
+                f"{omega_name} = {{value={obs_var.init_est_sd}, method=MLE}}"
+            )
         for error_param in obs_var.error_params:
             PARAMETER_items_.append(
                 f"{error_param.name}{obs_var.id} = "
@@ -154,6 +164,7 @@ def generate_mlxtran_file(
 
             [TASKS]
             populationParameters()
+            individualParameters(method = {conditionalMean, conditionalMode })
 
             [PLOTS]
             run = false
