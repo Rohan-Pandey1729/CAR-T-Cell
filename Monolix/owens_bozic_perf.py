@@ -207,7 +207,7 @@ if __name__ == "__main__":
 
     combos = list(product([20, 10, 5], [0.1, 0.2, 0.3, 0.4, 0.5, 0.8]))
     param = "l"
-    with open(f"results_{param}_1.txt", "w") as f:  # change file name each run
+    with open(f"results_{param}.txt", "a") as f:
         # for idx in range(len(combos)):
         for idx in range(5):
             n_pts, noise_level = combos[idx]
