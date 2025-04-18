@@ -205,11 +205,11 @@ def compute_rms(
 if __name__ == "__main__":
     from itertools import product
 
-    combos = list(product([20, 10, 5], [0.1, 0.2, 0.3, 0.4, 0.5, 0.8]))
-    param = "l"
+    combos = list(product([20, 10, 5], [0.1, 0.2, 0.3, 0.4, 0.5, 0.7]))
+    param = "a"
     with open(f"results_{param}.txt", "a") as f:
         # for idx in range(len(combos)):
-        for idx in range(5):
+        for idx in range(17, 18):
             n_pts, noise_level = combos[idx]
             model_params = [
                 MlxParam(
@@ -243,7 +243,7 @@ if __name__ == "__main__":
             model_path = "owens_bozic.txt"
             mlxtran_name = "owens_bozic"
 
-            param_seed = 1  # may want to adjust depending on param
+            param_seed = 9  # may want to adjust depending on param
             num_trials = 5
             for trial in range(num_trials):
                 noise_seed = sum([ord(c) for c in param]) + num_trials * idx + trial
@@ -278,7 +278,9 @@ if __name__ == "__main__":
                     cwd = Path.cwd()
                     shutil.rmtree(str(cwd.joinpath("owens_bozic")))
                 # wait until monolix finishes running before trying to compute metrics
-                run_experiment(mlxtran_path=f"{mlxtran_name}.mlxtran", mode="basic", n_threads=16)
+                run_experiment(
+                    mlxtran_path=f"{mlxtran_name}.mlxtran", mode="basic", n_threads=32
+                )
                 result_fp = Path(
                     "./owens_bozic/IndividualParameters/simulatedIndividualParameters.txt"
                 )
@@ -308,8 +310,42 @@ if __name__ == "__main__":
                 )
                 print(rms_vals)
 
+                def compute_rms_log(
+                    true_params_all: list[list[float]],
+                    pred_params_all: list[list[float]],
+                    initial_conditions_all: list[list[float]],
+                    model=owens_bozic_model,
+                    obs_times_all=obs_times_all,
+                ):
+                    true_ground_truths = generate_ground_truths(
+                        model, true_params_all, initial_conditions_all, obs_times_all
+                    )
+                    pred_ground_truths = generate_ground_truths(
+                        model, pred_params_all, initial_conditions_all, obs_times_all
+                    )
+                    rms_all = []
+                    for true_ground_truth, pred_ground_truth in zip(
+                        true_ground_truths, pred_ground_truths
+                    ):
+                        squared_diffs = (
+                            (
+                                np.log(np.abs(pred_ground_truth) + 1e-2)
+                                - np.log(np.abs(true_ground_truth) + 1e-2)
+                            )
+                            / np.log(10)
+                        ) ** 2
+                        rms = np.sqrt(np.mean(squared_diffs, axis=1))
+                        rms_all.append(rms)
+                    avg_rms_all = np.mean(rms_all, axis=0)
+                    return avg_rms_all
+
+                rms_log_vals = compute_rms_log(
+                    sampled_params_all, pred_params_all, initial_conditions_all
+                )
+                print(rms_log_vals)
+
                 output = (
                     f"{param=},{noise_level=},{n_pts=},{param_seed=},{noise_seed=},"
-                    + f"relative_err={100 * avg_rel_err}%,{rms_vals=}\n"
+                    + f"relative_err={100 * avg_rel_err}%,{rms_log_vals=},{rms_vals=}\n"
                 )
                 f.write(output)
