@@ -143,23 +143,22 @@ def csv_and_indiv_param_vals(
 def get_pred_params(param: str):  # fix soon to read the other file
     """
     Get a list of the predicted values of `param` for each patient
+
+
+
     """
-    fp = "./owens_bozic/IndividualParameters/simulatedIndividualParameters.txt"
+    fp = "./owens_bozic/IndividualParameters/estimatedIndividualParameters.txt"
     with open(fp, "r") as f:
         cols = f.readline().split(",")
-        col_idx = cols.index(param)
+        col_idx = cols.index(f"{param}_mode")
         pred_params = []
 
-        curr_indiv_preds = []
         while True:
             line = f.readline()
-            vals = line.split(",")
-            if not line or int(vals[0]) == 1 and curr_indiv_preds:
-                pred_params.append(np.median(curr_indiv_preds))
-                curr_indiv_preds = []
             if not line:
                 break
-            curr_indiv_preds.append(float(vals[col_idx]))
+            vals = line.split(",")
+            pred_params.append(float(vals[col_idx]))
 
     return pred_params
 
@@ -209,7 +208,7 @@ if __name__ == "__main__":
     param = "a"
     with open(f"results_{param}.txt", "a") as f:
         # for idx in range(len(combos)):
-        for idx in range(17, 18):
+        for idx in range(6):
             n_pts, noise_level = combos[idx]
             model_params = [
                 MlxParam(
@@ -282,12 +281,19 @@ if __name__ == "__main__":
                     mlxtran_path=f"{mlxtran_name}.mlxtran", mode="basic", n_threads=32
                 )
                 result_fp = Path(
-                    "./owens_bozic/IndividualParameters/simulatedIndividualParameters.txt"
+                    "./owens_bozic/IndividualParameters/estimatedIndividualParameters.txt"
                 )
                 while not result_fp.exists():
-                    print("\n" * 3 + "waiting..." + "\n" * 3)
+                    print("\nwaiting for SAEM...\n")
                     time.sleep(5)
-                time.sleep(5)  # make sure results are in
+                while True:
+                    with open(result_fp, "r") as f2:
+                        first_line = f2.readline()
+                        if f"{param}_mode" in first_line.split(","):
+                            break
+                        print("\nwaiting for individual estimation...\n")
+                        time.sleep(5)
+                        
 
                 pred_params = get_pred_params(param)
                 avg_abs_err = np.mean(
