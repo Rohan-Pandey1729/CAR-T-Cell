@@ -195,7 +195,7 @@ def generate_mlxtran_file(
         f.write(mlxtran_text)
 
 
-def run_experiment(mlxtran_path: str, mode="complete"):
+def run_experiment(mlxtran_path: str, mode="complete", n_threads=1):
     load_dotenv()
     if "MONOLIX_PATH" not in os.environ:
         raise LookupError("Couldn't find MONOLIX_PATH in .env file")
@@ -207,6 +207,8 @@ def run_experiment(mlxtran_path: str, mode="complete"):
             "--no-gui",
             "--mode",
             mode,
+            "--thread",
+            str(n_threads),
             "-p",
             str(cwd.joinpath(mlxtran_path)),
             "-o",
