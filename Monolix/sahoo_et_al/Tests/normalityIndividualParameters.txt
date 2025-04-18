@@ -1,6 +1,0 @@
-parameter,statistics,p-value,test
-kappa1,0.948782,0.826786,Shapiro-Wilk
-kappa2,0.945728,0.421654,Shapiro-Wilk
-theta,0.959184,0.775989,Shapiro-Wilk
-X0,0.930364,0.149226,Shapiro-Wilk
-Y0,0.947515,0.489452,Shapiro-Wilk
