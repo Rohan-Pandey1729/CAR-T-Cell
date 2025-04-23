@@ -233,6 +233,22 @@ def compute_rms_log(
     return avg_rms_all
 
 
+def get_outcome_type(
+    params: list[float],
+    initial_conditions: list[float],
+    obs_times: list[int],
+    model=owens_bozic_model,
+):
+    ground_truth = generate_ground_truths(
+        model, [params], [initial_conditions], [obs_times]
+    )[0]
+
+    ground_truth_tumor = ground_truth[0]
+    if ground_truth_tumor[-1] > 1e3:
+        return "NR"
+    return "CR"
+
+
 def run_and_record(
     n_pts: int,
     noise_level: float,
@@ -344,11 +360,15 @@ def run_and_record(
                     print(f"{smoothing_did_converge=}")
 
         pred_params = get_pred_params(param)
+
+        get_avg_rel_err = lambda pred, true: np.mean(
+            np.abs(np.array(pred) - np.array(true)) / np.array(true)
+        )
+
         pred_minus_true = np.array(pred_params) - np.array(true_indiv_params)
         avg_abs_err = np.mean(np.abs(pred_minus_true))
-        avg_rel_err = np.mean(np.abs(pred_minus_true) / np.array(true_indiv_params))
+        avg_rel_err = get_avg_rel_err(pred_params, true_indiv_params)
         print(np.array(true_indiv_params))
-        print(np.array(pred_params) - np.array(true_indiv_params))
         print(
             f"{param=}, {noise_level=}, {n_pts=}: {avg_abs_err:.6f}, {100 * avg_rel_err:.6f}%"
         )
@@ -356,6 +376,85 @@ def run_and_record(
             pred_params, sampled_params_all, param_idx
         )
         rms_obs_times_all = [list(range(5, 105, 5)) for _ in range(n_indivs)]
+        outcomes = [
+            get_outcome_type(sampled_params, initial_conditions, rms_obs_times)
+            for sampled_params, initial_conditions, rms_obs_times in zip(
+                sampled_params_all, initial_conditions_all, rms_obs_times_all
+            )
+        ]
+        print(outcomes)
+
+        keep = lambda lst, outcome_type: list(
+            map(
+                lambda x: x[0],
+                filter(lambda x: x[1] == outcome_type, zip(lst, outcomes)),
+            )
+        )
+
+        true_params_CR = keep(true_indiv_params, "CR")
+        true_params_NR = keep(true_indiv_params, "NR")
+        # sorry for naming
+        pred_single_params_CR = keep(pred_params, "CR")
+        pred_single_params_NR = keep(pred_params, "NR")
+
+        avg_rel_err_CR = (
+            -1
+            if not true_params_CR
+            else get_avg_rel_err(pred_single_params_CR, true_params_CR)
+        )
+        avg_rel_err_NR = (
+            -1
+            if not true_params_NR
+            else get_avg_rel_err(pred_single_params_NR, true_params_NR)
+        )
+
+        sampled_params_CR = keep(sampled_params_all, "CR")
+        sampled_params_NR = keep(sampled_params_all, "NR")
+        pred_params_CR = keep(pred_params_all, "CR")
+        pred_params_NR = keep(pred_params_all, "NR")
+        initial_conditions_CR = keep(initial_conditions_all, "CR")
+        initial_conditions_NR = keep(initial_conditions_all, "NR")
+
+        rms_vals_CR = []
+        if sampled_params_CR:
+            rms_vals_CR = compute_rms(
+                sampled_params_CR,
+                pred_params_CR,
+                initial_conditions_CR,
+                obs_times_all=rms_obs_times_all[: len(sampled_params_CR)],
+            )
+        print("CR", rms_vals_CR)
+
+        rms_vals_NR = []
+        if sampled_params_NR:
+            rms_vals_NR = compute_rms(
+                sampled_params_NR,
+                pred_params_NR,
+                initial_conditions_NR,
+                obs_times_all=rms_obs_times_all[: len(sampled_params_NR)],
+            )
+        print("NR", rms_vals_NR)
+
+        rms_log_vals_CR = []
+        if sampled_params_CR:
+            rms_log_vals_CR = compute_rms_log(
+                sampled_params_CR,
+                pred_params_CR,
+                initial_conditions_CR,
+                obs_times_all=rms_obs_times_all[: len(sampled_params_CR)],
+            )
+        print("CR_log", rms_log_vals_CR)
+
+        rms_log_vals_NR = []
+        if sampled_params_NR:
+            rms_log_vals_NR = compute_rms_log(
+                sampled_params_NR,
+                pred_params_NR,
+                initial_conditions_NR,
+                obs_times_all=rms_obs_times_all[: len(sampled_params_NR)],
+            )
+        print("NR_log", rms_log_vals_NR)
+
         rms_vals = compute_rms(
             sampled_params_all,
             pred_params_all,
@@ -370,9 +469,10 @@ def run_and_record(
             initial_conditions_all,
             obs_times_all=rms_obs_times_all,
         )
-        print(f"{trial=}", rms_log_vals)
+        print(f"{setting_idx=}, {trial=}", rms_log_vals)
 
         obs_var_names = ["T", "E", "C", "M"]
+
         output = ",".join(
             [
                 f"{param=}",
@@ -383,7 +483,9 @@ def run_and_record(
                 f"{noise_seed=}",
                 f"{exploratory_did_converge=}",
                 f"{smoothing_did_converge=}",
-                f"param_relative_err={100 * avg_rel_err}",
+                f"param_relative_err={avg_rel_err}",
+                f"param_relative_err_CR={avg_rel_err_CR}",
+                f"param_relative_err_NR={avg_rel_err_NR}",
                 ",".join(
                     [
                         f"rms_log_{obs_var}={y}"
@@ -396,8 +498,61 @@ def run_and_record(
                         for obs_var, y in zip(obs_var_names, rms_vals)
                     ]
                 ),
-                f"true_params='{true_indiv_params}'",
-                f"pred_params='{pred_params}'",
+                ",".join(
+                    [
+                        f"rms_log_CR_{obs_var}={y}"
+                        for obs_var, y in zip(
+                            obs_var_names,
+                            (
+                                [-1] * len(obs_var_names)
+                                if len(rms_log_vals_CR) == 0
+                                else rms_log_vals_CR
+                            ),
+                        )
+                    ]
+                ),
+                ",".join(
+                    [
+                        f"rms_CR_{obs_var}={y}"
+                        for obs_var, y in zip(
+                            obs_var_names,
+                            (
+                                [-1] * len(obs_var_names)
+                                if len(rms_vals_CR) == 0
+                                else rms_vals_CR
+                            ),
+                        )
+                    ]
+                ),
+                ",".join(
+                    [
+                        f"rms_log_NR_{obs_var}={y}"
+                        for obs_var, y in zip(
+                            obs_var_names,
+                            (
+                                [-1] * len(obs_var_names)
+                                if len(rms_log_vals_NR) == 0
+                                else rms_log_vals_NR
+                            ),
+                        )
+                    ]
+                ),
+                ",".join(
+                    [
+                        f"rms_NR_{obs_var}={y}"
+                        for obs_var, y in zip(
+                            obs_var_names,
+                            (
+                                [-1] * len(obs_var_names)
+                                if len(rms_vals_NR) == 0
+                                else rms_vals_NR
+                            ),
+                        )
+                    ]
+                ),
+                f"true_params: {true_indiv_params}",
+                f"pred_params: {pred_params}",
+                f"outcomes: {outcomes}",
             ]
         )
 
@@ -413,11 +568,13 @@ if __name__ == "__main__":
 
     setting_combos = setting_combos_1
     params_with_seeds = [("l", 1), ("a", 9), ("s", 105), ("jC", 10), ("dC", 10)]
-    num_trials = 5
-    for param, param_seed in params_with_seeds[:1]:
+    num_trials = 1
+    # for param, param_seed in params_with_seeds[:2]:
+    for param, param_seed in params_with_seeds[2:3]:
+    # for param, param_seed in params_with_seeds[:1]:
         with open(f"results_{param}_v2.txt", "a") as f:
-            # for idx in range(len(setting_combos)):
-            for setting_idx in range(1, 5):
+            # for setting_idx in range(len(setting_combos)):
+            for setting_idx in range(5, 6):
                 n_pts, noise_level, n_indivs = setting_combos[setting_idx]
                 run_and_record(
                     n_pts=n_pts,
