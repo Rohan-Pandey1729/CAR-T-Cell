@@ -47,6 +47,7 @@ def generate_mlxtran_file(
     model_path: str,
     model_params: list[MlxParam],
     obs_vars: list[MlxObsVar],
+    hidden_obs_var_idxs: list[int] = [],
 ):
     # everything that needs to be generated
     INDIVIDUAL_input = []
@@ -97,15 +98,16 @@ def generate_mlxtran_file(
             + f"typical={name_pop}, "
             + (f"sd={omega_name}}}" if not obs_var.is_fixed else "no-variability}")
         )
-        LONGITUDINAL_input.extend(nonfixed_error_param_names_id)
-        LONG_DEFINITION_items_.append(
-            f"y{obs_var.id} = "
-            + f"{{distribution={obs_var.error_model_dist_name}, "
-            + f"prediction={obs_var.pred_name}, "
-            + f"errorModel={obs_var.error_model_name}({', '.join(nonfixed_error_param_names_id)})}}"
-        )
-        FIT_data.append(obs_var.id)
-        FIT_model.append(f"y{obs_var.id}")
+        if obs_var.id not in hidden_obs_var_idxs:
+            LONGITUDINAL_input.extend(nonfixed_error_param_names_id)
+            LONG_DEFINITION_items_.append(
+                f"y{obs_var.id} = "
+                + f"{{distribution={obs_var.error_model_dist_name}, "
+                + f"prediction={obs_var.pred_name}, "
+                + f"errorModel={obs_var.error_model_name}({', '.join(nonfixed_error_param_names_id)})}}"
+            )
+            FIT_data.append(obs_var.id)
+            FIT_model.append(f"y{obs_var.id}")
         PARAMETER_items_.append(
             f"{name_pop} = "
             + f"{{value={obs_var.init_est_pop}, "
@@ -115,12 +117,13 @@ def generate_mlxtran_file(
             PARAMETER_items_.append(
                 f"{omega_name} = {{value={obs_var.init_est_sd}, method=MLE}}"
             )
-        for error_param in obs_var.error_params:
-            PARAMETER_items_.append(
-                f"{error_param.name}{obs_var.id} = "
-                + f"{{value={error_param.init_est}, "
-                + f"method={'FIXED' if error_param.is_fixed else 'MLE'}}}"
-            )
+        if obs_var.id not in hidden_obs_var_idxs:
+            for error_param in obs_var.error_params:
+                PARAMETER_items_.append(
+                    f"{error_param.name}{obs_var.id} = "
+                    + f"{{value={error_param.init_est}, "
+                    + f"method={'FIXED' if error_param.is_fixed else 'MLE'}}}"
+                )
 
     mlxtran_template = Template(
         textwrap.dedent(
