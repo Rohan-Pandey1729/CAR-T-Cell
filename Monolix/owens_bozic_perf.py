@@ -258,13 +258,17 @@ def get_outcome_type(
 
 
 def run_and_record(
-    param: str,     # TODO: make this `params: list[str]`
+    param: str,  # TODO: make this `params: list[str]`
     n_pts: int,
     noise_level: float,
     n_indivs: int,
     param_seed: int,
     result_file: TextIO,
     num_trials=5,
+    csv_path="owens_bozic_perf.csv",
+    model_path="owens_bozic.txt",
+    mlxtran_name="owens_bozic",
+    hidden_obs_var_idxs: list[int] = [],
 ):
     model_params = [
         MlxParam(
@@ -272,7 +276,8 @@ def run_and_record(
             dist_name="logNormal",
             init_est_pop=mean,
             init_est_sd=sd,
-            is_fixed=param != name,     # TODO: make this check if `name` is not in `params`
+            is_fixed=param
+            != name,  # TODO: make this check if `name` is not in `params`
         )
         for name, mean, sd in MODEL_PARAMS
     ]
@@ -294,13 +299,11 @@ def run_and_record(
         )
         for id, (name, mean, sd) in enumerate(OBS_VARS)
     ]
-    csv_path = "owens_bozic_perf.csv"
-    model_path = "owens_bozic.txt"
-    mlxtran_name = "owens_bozic"
 
+    temp_csv_path = f"{csv_path.removesuffix(".csv")}-temp.csv"
     for trial in range(num_trials):
         noise_seed = (
-            sum([ord(c) for c in param])    # TODO: use `params[0]` instead of `param`
+            sum([ord(c) for c in param])  # TODO: use `params[0]` instead of `param`
             + int(100 * noise_level * n_pts * n_indivs)
             + trial
         )
@@ -315,9 +318,23 @@ def run_and_record(
             n_pts,
             param_seed=param_seed,
             noise_seed=noise_seed,
-            csv_filename=csv_path,
+            csv_filename=temp_csv_path,
             n_indivs=n_indivs,
         )
+        # strip observations for all hidden observation variables
+        with open(temp_csv_path, "r") as f_orig:
+            with open(csv_path, "w") as f:
+                for line in f_orig.readlines():
+                    if any(
+                        x in line
+                        for x in ["time"]
+                        + [
+                            obs_var
+                            for i, (obs_var, *_) in enumerate(OBS_VARS)
+                            if i not in hidden_obs_var_idxs
+                        ]
+                    ):
+                        f.write(line)
         print(f"csv generated at {csv_path}")
         generate_mlxtran_file(
             name=mlxtran_name,
@@ -325,6 +342,7 @@ def run_and_record(
             model_path=model_path,
             model_params=model_params,
             obs_vars=obs_vars,
+            hidden_obs_var_idxs=hidden_obs_var_idxs,
         )
 
         if "owens_bozic" in os.listdir("."):
@@ -345,7 +363,7 @@ def run_and_record(
         while True:
             with open(result_fp, "r") as f_results:
                 first_line = f_results.readline()
-                if f"{param}_mode" in first_line.split(","):    # TODO: use `params[0]`
+                if f"{param}_mode" in first_line.split(","):  # TODO: use `params[0]`
                     break
                 print("\nwaiting for individual estimation...\n")
                 time.sleep(5)
@@ -368,7 +386,9 @@ def run_and_record(
                     smoothing_did_converge = "Autostop" in line
                     print(f"{smoothing_did_converge=}")
 
-        pred_params = get_pred_params(param)    # TODO: make this `pred_params_list` using `params`
+        pred_params = get_pred_params(
+            param
+        )  # TODO: make this `pred_params_list` using `params`
 
         get_avg_rel_err = lambda pred, true: np.mean(
             np.abs(np.array(pred) - np.array(true)) / np.array(true)
@@ -573,7 +593,7 @@ def run_and_record(
         )
 
         result_file.write(output + "\n")
-
+        result_file.flush()     # so we can see results immediately
 
 if __name__ == "__main__":
     from itertools import product
@@ -582,16 +602,16 @@ if __name__ == "__main__":
     setting_combos_2 = list(product([20, 10, 5], [0.1, 0.25], [1, 5, 20]))
     setting_combos_3 = list(product([20, 10, 5], [0.1, 0.2, 0.3, 0.4, 0.5, 0.7], [10]))
 
-    setting_combos = setting_combos_2
+    setting_combos = setting_combos_1
     params_with_seeds = [("l", 1), ("a", 9), ("s", 105), ("jC", 10), ("dC", 10)]
     num_trials = 5
 
     # TODO: update this to select a list of two params,
     # but still only one param_seed (from the first param)
-    param, param_seed = params_with_seeds[0]
-    with open(f"results_{param}_v2.txt", "a") as f:
+    param, param_seed = params_with_seeds[1]
+    with open(f"results_{param}_TC_only.txt", "a") as f:
         # for setting_idx in range(len(setting_combos)):
-        for setting_idx in range(3, 12):
+        for setting_idx in range(2):
             n_pts, noise_level, n_indivs = setting_combos[setting_idx]
             run_and_record(
                 param=param,
@@ -601,4 +621,6 @@ if __name__ == "__main__":
                 param_seed=param_seed + abs(n_indivs - 10),
                 result_file=f,
                 num_trials=num_trials,
+                model_path="owens_bozic_2.txt",
+                hidden_obs_var_idxs=[1, 3],
             )
