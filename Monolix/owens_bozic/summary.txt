@@ -1,0 +1,131 @@
+********************************************************************************
+*                          owens_bozic.mlxtran                                 *
+*                          April 28, 2025 at 23:44:43                          *
+*                          Monolix version : 2024R1                            *
+********************************************************************************
+
+
+ESTIMATION OF THE POPULATION PARAMETERS ________________________________________
+
+Fixed Effects ----------------------------
+a_pop     :                           0.33
+b_pop     :                       2.26e-11
+dE_pop    :                           3.17
+dC_pop    :                           2.21
+g_pop     :                       1.03e+04
+jE_pop    :                         0.0156
+jC_pop    :                          0.346
+K_pop     :                       5.21e+08
+k_pop     :                       8.67e+06
+l_pop     :                           1.42
+mE_pop    :                         0.0176
+mC_pop    :                          0.293
+qE_pop    :                       1.28e-10
+qC_pop    :                       2.14e-10
+s_pop     :                          0.302
+KT_pop    :                            0.7
+KE_pop    :                            0.6
+KC_pop    :                            0.6
+gamma_pop :                            0.9
+T0_pop    :                       1.58e+09
+E0_pop    :                          4e+05
+C0_pop    :                        6.3e+07
+M0_pop    :                              6
+
+Standard Deviation of the Random Effects -
+omega_dC  :                         0.0494
+
+Error Model Parameters -------------------
+b0        :                        0.00935
+b1        :                         0.0827
+b2        :                         0.0554
+b3        :                          0.953
+
+Elapsed time (seconds):       31
+CPU time     (seconds):  1.8e+02
+Exploratory phase iterations:      198 (Autostop)
+Smoothing phase iterations:        200 (Stopped at the maximum number of iterations)
+
+ _______________________________________________________________________________
+
+
+
+ESTIMATION OF THE INDIVIDUAL PARAMETERS ________________________________________
+
+
+Estimation of the individual parameters by Conditional Distribution ------------
+                  min            Q1        median            Q3           max  shrinkage(%)
+a     :          0.33          0.33          0.33          0.33          0.33           nan
+b     :      2.26e-11      2.26e-11      2.26e-11      2.26e-11      2.26e-11           nan
+dE    :          3.17          3.17          3.17          3.17          3.17           nan
+dC    :           2.1          2.12           2.2          2.28          2.41          5.42
+g     :      1.03e+04      1.03e+04      1.03e+04      1.03e+04      1.03e+04           nan
+jE    :        0.0156        0.0156        0.0156        0.0156        0.0156           nan
+jC    :         0.346         0.346         0.346         0.346         0.346           nan
+K     :      5.21e+08      5.21e+08      5.21e+08      5.21e+08      5.21e+08           nan
+k     :      8.67e+06      8.67e+06      8.67e+06      8.67e+06      8.67e+06           nan
+l     :          1.42          1.42          1.42          1.42          1.42           nan
+mE    :        0.0176        0.0176        0.0176        0.0176        0.0176           nan
+mC    :         0.293         0.293         0.293         0.293         0.293           nan
+qE    :      1.28e-10      1.28e-10      1.28e-10      1.28e-10      1.28e-10           nan
+qC    :      2.14e-10      2.14e-10      2.14e-10      2.14e-10      2.14e-10           nan
+s     :         0.302         0.302         0.302         0.302         0.302           nan
+KT    :           0.7           0.7           0.7           0.7           0.7           nan
+KE    :           0.6           0.6           0.6           0.6           0.6           nan
+KC    :           0.6           0.6           0.6           0.6           0.6           nan
+gamma :           0.9           0.9           0.9           0.9           0.9           nan
+T0    :      1.58e+09      1.58e+09      1.58e+09      1.58e+09      1.58e+09           nan
+E0    :         4e+05         4e+05         4e+05         4e+05         4e+05           nan
+C0    :       6.3e+07       6.3e+07       6.3e+07       6.3e+07       6.3e+07           nan
+M0    :             6             6             6             6             6           nan
+
+Elapsed time (seconds):      2.9
+CPU time     (seconds):       15
+Iterations:       59 (Autostop)
+
+ -------------------------------------------------------------------------------
+
+
+Estimation of the individual parameters by Conditional Mode --------------------
+                  min            Q1        median            Q3           max  shrinkage(%)
+a     :          0.33          0.33          0.33          0.33          0.33           nan
+b     :      2.26e-11      2.26e-11      2.26e-11      2.26e-11      2.26e-11           nan
+dE    :          3.17          3.17          3.17          3.17          3.17           nan
+dC    :           2.1          2.12          2.19          2.28           2.4          5.11
+g     :      1.03e+04      1.03e+04      1.03e+04      1.03e+04      1.03e+04           nan
+jE    :        0.0156        0.0156        0.0156        0.0156        0.0156           nan
+jC    :         0.346         0.346         0.346         0.346         0.346           nan
+K     :      5.21e+08      5.21e+08      5.21e+08      5.21e+08      5.21e+08           nan
+k     :      8.67e+06      8.67e+06      8.67e+06      8.67e+06      8.67e+06           nan
+l     :          1.42          1.42          1.42          1.42          1.42           nan
+mE    :        0.0176        0.0176        0.0176        0.0176        0.0176           nan
+mC    :         0.293         0.293         0.293         0.293         0.293           nan
+qE    :      1.28e-10      1.28e-10      1.28e-10      1.28e-10      1.28e-10           nan
+qC    :      2.14e-10      2.14e-10      2.14e-10      2.14e-10      2.14e-10           nan
+s     :         0.302         0.302         0.302         0.302         0.302           nan
+KT    :           0.7           0.7           0.7           0.7           0.7           nan
+KE    :           0.6           0.6           0.6           0.6           0.6           nan
+KC    :           0.6           0.6           0.6           0.6           0.6           nan
+gamma :           0.9           0.9           0.9           0.9           0.9           nan
+T0    :      1.58e+09      1.58e+09      1.58e+09      1.58e+09      1.58e+09           nan
+E0    :         4e+05         4e+05         4e+05         4e+05         4e+05           nan
+C0    :       6.3e+07       6.3e+07       6.3e+07       6.3e+07       6.3e+07           nan
+M0    :             6             6             6             6             6           nan
+
+Elapsed time (seconds):     0.15
+CPU time     (seconds):        0
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+DATASET INFORMATION
+Number of individuals: 10
+Number of observations (obsid 0): 30
+Number of observations (obsid 1): 30
+Number of observations (obsid 2): 30
+Number of observations (obsid 3): 30
+Number of doses: 0
+

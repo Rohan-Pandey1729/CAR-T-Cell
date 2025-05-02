@@ -568,13 +568,13 @@ if __name__ == "__main__":
 
     setting_combos = setting_combos_1
     params_with_seeds = [("l", 1), ("a", 9), ("s", 105), ("jC", 10), ("dC", 10)]
-    num_trials = 1
+    num_trials = 5
     # for param, param_seed in params_with_seeds[:2]:
-    for param, param_seed in params_with_seeds[2:3]:
+    for param, param_seed in params_with_seeds[4:]:
     # for param, param_seed in params_with_seeds[:1]:
         with open(f"results_{param}_v2.txt", "a") as f:
             # for setting_idx in range(len(setting_combos)):
-            for setting_idx in range(5, 6):
+            for setting_idx in range(15):
                 n_pts, noise_level, n_indivs = setting_combos[setting_idx]
                 run_and_record(
                     n_pts=n_pts,

@@ -1,0 +1,1 @@
+param='l',noise_level=0.1,n_pts=20,param_seed=1,noise_seed=108,relative_err=0.04826442737684537%,rms_log_vals=array([2.62648622e-01, 1.73640155e-04, 2.34349606e-03, 2.52229326e-08]),rms_vals=array([3.79372357e+05, 7.09144095e+01, 1.35070978e+05, 7.00797413e-10])

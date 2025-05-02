@@ -1,7 +1,7 @@
 <DATAFILE>
 
 [FILEINFO]
-file={path='owens_bozic_perf.csv'}
+file={path='../../../owens_bozic_perf.csv'}
 delimiter = comma
 header={time, id, observation, observation_id, observation_type}
 
@@ -44,7 +44,7 @@ M0 = {distribution=logNormal, typical=M0_pop, no-variability}
 [LONGITUDINAL]
 input = {b0, b1, b2, b3}
 
-file = 'owens_bozic.txt'
+file = '../../../owens_bozic.txt'
 
 DEFINITION:
 y0 = {distribution=normal, prediction=TT, errorModel=proportional(b0)}
@@ -57,44 +57,46 @@ data = {'0', '1', '2', '3'}
 model = {y0, y1, y2, y3}
 
 <PARAMETER>
-a_pop = {value=0.33, method=FIXED}
-b_pop = {value=2.26e-11, method=FIXED}
-dE_pop = {value=3.17, method=FIXED}
-dC_pop = {value=2.25, method=MLE}
-omega_dC = {value=0.01, method=MLE}
-g_pop = {value=10300.0, method=FIXED}
-jE_pop = {value=0.0156, method=FIXED}
-jC_pop = {value=0.346, method=FIXED}
-K_pop = {value=521000000.0, method=FIXED}
-k_pop = {value=8670000.0, method=FIXED}
-l_pop = {value=1.418, method=FIXED}
-mE_pop = {value=0.0176, method=FIXED}
-mC_pop = {value=0.293, method=FIXED}
-qE_pop = {value=1.28e-10, method=FIXED}
-qC_pop = {value=2.14e-10, method=FIXED}
-s_pop = {value=0.302, method=FIXED}
-KT_pop = {value=0.7, method=FIXED}
-KE_pop = {value=0.6, method=FIXED}
+C0_pop = {value=63000000, method=FIXED}
+E0_pop = {value=400000, method=FIXED}
 KC_pop = {value=0.6, method=FIXED}
-gamma_pop = {value=0.9, method=FIXED}
-T0_pop = {value=1580000000.0, method=FIXED}
+KE_pop = {value=0.6, method=FIXED}
+KT_pop = {value=0.7, method=FIXED}
+K_pop = {value=521000000, method=FIXED}
+M0_pop = {value=6, method=FIXED}
+T0_pop = {value=1580000000, method=FIXED}
+a_pop = {value=0.33, method=FIXED}
 b0 = {value=0.1, method=MLE}
-c0 = {value=1, method=FIXED}
-E0_pop = {value=400000.0, method=FIXED}
 b1 = {value=0.1, method=MLE}
-c1 = {value=1, method=FIXED}
-C0_pop = {value=63000000.0, method=FIXED}
 b2 = {value=0.1, method=MLE}
-c2 = {value=1, method=FIXED}
-M0_pop = {value=6.0, method=FIXED}
 b3 = {value=0.1, method=MLE}
+b_pop = {value=0.0000000000226, method=FIXED}
+c0 = {value=1, method=FIXED}
+c1 = {value=1, method=FIXED}
+c2 = {value=1, method=FIXED}
 c3 = {value=1, method=FIXED}
+dC_pop = {value=2.25, method=MLE}
+dE_pop = {value=3.17, method=FIXED}
+g_pop = {value=10300, method=FIXED}
+gamma_pop = {value=0.9, method=FIXED}
+jC_pop = {value=0.346, method=FIXED}
+jE_pop = {value=0.0156, method=FIXED}
+k_pop = {value=8670000, method=FIXED}
+l_pop = {value=1.418, method=FIXED}
+mC_pop = {value=0.293, method=FIXED}
+mE_pop = {value=0.0176, method=FIXED}
+omega_dC = {value=0.01, method=MLE}
+qC_pop = {value=0.000000000214, method=FIXED}
+qE_pop = {value=0.000000000128, method=FIXED}
+s_pop = {value=0.302, method=FIXED}
 
 <MONOLIX>
 
 [TASKS]
 populationParameters()
 individualParameters(method = {conditionalMean, conditionalMode })
+fim(run = false,method = none )
+logLikelihood(run = false,method = none )
 
 [PLOTS]
 run = false
@@ -103,4 +105,5 @@ plots = {indfits = {selected = true}, parameterdistribution = {selected = true},
 [SETTINGS]
 GLOBAL:
 seed = 545331266
-exportpath = 'owens_bozic'
+exportpath = '../../'
+
