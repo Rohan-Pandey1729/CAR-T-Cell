@@ -2,3 +2,12 @@
 Bad_code.py
 .venv
 .env
+__pycache__
+
+# generated images
+Monolix/img
+# Monolix generated directories
+Monolix/sahoo_et_al
+Monolix/owens_bozic
+Monolix/test
+Monolix/cart

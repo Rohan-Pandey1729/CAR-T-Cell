@@ -1,8 +1,0 @@
-parameters,shrinkage_mode,shrinkage_mean,shrinkage_condDist
-rho,nan,nan,nan
-K,nan,nan,nan
-kappa1,85.5102,98.515,-4.49394
-kappa2,95.7862,97.9858,-5.99035
-theta,97.663,98.379,11.9288
-X0,79.3082,95.3456,10.7007
-Y0,81.8282,98.3475,-1.18714
