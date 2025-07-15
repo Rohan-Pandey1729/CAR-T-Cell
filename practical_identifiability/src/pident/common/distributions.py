@@ -5,7 +5,7 @@ Provides ways to interact with probability distributions.
 from abc import ABC, abstractmethod
 
 import numpy as np
-from main.common.exceptions import DomainError
+from pident.common.exceptions import DomainError
 from numpy.random import Generator
 from numpy.typing import ArrayLike
 from scipy.stats import lognorm, truncnorm
