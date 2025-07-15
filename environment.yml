@@ -10,3 +10,6 @@ dependencies:
   - scipy>=1.14
   - ipykernel
   - python-dotenv
+  - pip
+  - pip:
+      - -e ./practical_identifiability
