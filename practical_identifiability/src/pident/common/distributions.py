@@ -88,12 +88,13 @@ class TruncLognorm(UnivarDist):
     _MAX_ITER = 100
 
     def __init__(
-        self, mean: float, mlx_omega: float, lower_bound=0.0, upper_bound=np.inf
+        self, median: float, mlx_omega: float, lower_bound=0.0, upper_bound=np.inf
     ):
         """
-        Constructs a lognormal random variable `Y` such that
-        `X = log(Y)` is normal with mean `mean` and
-        standard deviation `mlx_omega`, truncated below at `lower_bound`
+        Constructs a lognormal random variable `Y` with median `median`
+        such that `X = log(Y)` is normal with
+        standard deviation `mlx_omega`; then truncates `Y`
+        below at `lower_bound`
         (which should be nonnegative) and above at `upper_bound`
         (which should be greater than `lower_bound`).
 
@@ -108,7 +109,7 @@ class TruncLognorm(UnivarDist):
             raise DomainError("upper_bound must be greater than lower_bound")
 
         s = mlx_omega
-        scale = np.exp(mean)
+        scale = median
         self._rv = lognorm(s=s, scale=scale)
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
