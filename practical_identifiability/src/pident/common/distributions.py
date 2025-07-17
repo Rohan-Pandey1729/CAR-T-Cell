@@ -37,6 +37,27 @@ class UnivarDist(ABC):
         pass
 
 
+class Constant(UnivarDist):
+    def __init__(self, val: float):
+        """
+        Constructs a constant random variable always equal to `val`.
+        """
+        self._val = val
+        self._tol = val * 0.01
+
+    def sample(self, rng: Generator) -> float:
+        return self._val
+
+    def pdf(self, x: ArrayLike) -> ArrayLike:
+        # have to do something that will show up on a plot
+        x = np.array(x)
+        return np.where(
+            np.abs(x - self._val) < self._tol,
+            np.ones(shape=x.shape, dtype=np.float64),
+            np.zeros(shape=x.shape, dtype=np.float64),
+        )
+
+
 class TruncNorm(UnivarDist):
     def __init__(
         self, mean: float, mlx_omega: float, lower_bound=-np.inf, upper_bound=np.inf
