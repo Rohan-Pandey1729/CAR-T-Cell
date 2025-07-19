@@ -63,7 +63,10 @@ def proportional_normal_error_model(
         lower_bound = -float("inf")
 
     def noise_func(obs: float, rng: Generator) -> float:
-        noisy_obs = TruncNorm(mean=obs, mlx_omega=obs * noise_level).sample(rng)
+        eps = 1e-5
+        noisy_obs = TruncNorm(mean=obs, mlx_omega=max(obs * noise_level, eps)).sample(
+            rng
+        )
         return max(noisy_obs, lower_bound)
 
     return noise_func
