@@ -5,9 +5,9 @@ Provides ways to interact with probability distributions.
 from abc import ABC, abstractmethod
 
 import numpy as np
-from pident.common.exceptions import DomainError
 from numpy.random import Generator
 from numpy.typing import ArrayLike
+from pident.common.exceptions import DomainError
 from scipy.stats import lognorm, truncnorm
 
 
@@ -36,6 +36,12 @@ class UnivarDist(ABC):
         """
         pass
 
+    @abstractmethod
+    def plot_bounds(self) -> tuple[float, float]:
+        """
+        Returns a recommended interval to plot the pdf on.
+        """
+
 
 class Constant(UnivarDist):
     def __init__(self, val: float):
@@ -57,6 +63,10 @@ class Constant(UnivarDist):
             np.zeros(shape=x.shape, dtype=np.float64),
         )
 
+    def plot_bounds(self) -> tuple[float, float]:
+        # assumes value is positive
+        return (0.0, 2 * self._val)
+
 
 class TruncNorm(UnivarDist):
     def __init__(
@@ -76,12 +86,31 @@ class TruncNorm(UnivarDist):
             raise DomainError("upper_bound must be greater than lower_bound")
 
         self._rv = truncnorm(loc=mean, scale=mlx_omega, a=lower_bound, b=upper_bound)
+        self._lower_bound = lower_bound
+        self._upper_bound = upper_bound
 
     def sample(self, rng: Generator) -> float:
         return self._rv.rvs(random_state=rng)
 
     def pdf(self, x: ArrayLike) -> ArrayLike:
         return self._rv.pdf(x)  # type: ignore
+
+    def plot_bounds(self) -> tuple[float, float]:
+        MIN_QUANTILE = 0.01
+        MAX_QUANTILE = 0.99
+        WIDTH_FACTOR = 0.2
+        no_trunc_low, no_trunc_high = (
+            self._rv.ppf(MIN_QUANTILE),
+            self._rv.ppf(MAX_QUANTILE),
+        )
+        no_trunc_width = no_trunc_high - no_trunc_low
+        low = no_trunc_low
+        if self._lower_bound > -np.inf:
+            low = self._lower_bound - WIDTH_FACTOR * no_trunc_width
+        high = no_trunc_high
+        if self._upper_bound < np.inf:
+            high = self._upper_bound + WIDTH_FACTOR * no_trunc_width
+        return (low, high)
 
 
 class TruncLognorm(UnivarDist):
@@ -132,7 +161,24 @@ class TruncLognorm(UnivarDist):
     def pdf(self, x: ArrayLike) -> ArrayLike:
         x = np.array(x)
         return np.where(
-            self._lower_bound <= x <= self._upper_bound,
+            (self._lower_bound <= x) & (x <= self._upper_bound),
             self._rv.pdf(x) * self._norm_factor,  # type: ignore
             0.0,
         )
+
+    def plot_bounds(self) -> tuple[float, float]:
+        MIN_QUANTILE = 0.0
+        MAX_QUANTILE = 0.99
+        WIDTH_FACTOR = 0.25
+        no_trunc_low, no_trunc_high = (
+            self._rv.ppf(MIN_QUANTILE),
+            self._rv.ppf(MAX_QUANTILE),
+        )
+        no_trunc_width = no_trunc_high - no_trunc_low
+        low = no_trunc_low
+        if self._lower_bound > 0:
+            low = max(0.0, self._lower_bound - WIDTH_FACTOR * no_trunc_width)
+        high = no_trunc_high
+        if self._upper_bound < np.inf:
+            high = min(high, self._upper_bound + WIDTH_FACTOR * no_trunc_width)
+        return (low, high)

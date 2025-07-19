@@ -5,9 +5,9 @@ distributions and some implementations.
 
 from typing import Callable
 
-from main.util.distributions import UnivarDist
 from numpy.random import Generator
 from numpy.typing import ArrayLike
+from pident.common.distributions import UnivarDist
 
 MultivarSampler = Callable[[Generator], ArrayLike]
 
