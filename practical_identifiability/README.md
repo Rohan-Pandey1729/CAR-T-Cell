@@ -11,7 +11,7 @@ TODO: write
 ## Usage notes
 
 To be able to run scripts that run Monolix, create a .env file in
-`src/main` and include the following:
+`src/pident` and include the following:
 
 ```bash
 MONOLIX_PATH="/path/to/monolix/binary"
