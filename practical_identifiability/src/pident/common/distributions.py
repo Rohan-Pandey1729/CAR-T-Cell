@@ -145,6 +145,7 @@ class TruncLognorm(UnivarDist):
         self._norm_factor = 1.0 / (
             self._rv.cdf(upper_bound) - self._rv.cdf(lower_bound)
         )  # pdf normalization factor
+        self._median = median
 
     def sample(self, rng: Generator) -> float:
         for _ in range(TruncLognorm._MAX_ITER):
@@ -170,6 +171,7 @@ class TruncLognorm(UnivarDist):
         MIN_QUANTILE = 0.0
         MAX_QUANTILE = 0.99
         WIDTH_FACTOR = 0.25
+        MAX_DISTORTION_FACTOR = 6.0
         no_trunc_low, no_trunc_high = (
             self._rv.ppf(MIN_QUANTILE),
             self._rv.ppf(MAX_QUANTILE),
@@ -181,4 +183,4 @@ class TruncLognorm(UnivarDist):
         high = no_trunc_high
         if self._upper_bound < np.inf:
             high = min(high, self._upper_bound + WIDTH_FACTOR * no_trunc_width)
-        return (low, high)
+        return (low, min(high, MAX_DISTORTION_FACTOR * self._median))
