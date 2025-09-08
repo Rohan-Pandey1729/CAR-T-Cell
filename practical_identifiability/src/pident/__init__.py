@@ -1,9 +1,7 @@
-from pident import common, estimation, lib, metrics, synthetic_data, viz
+from pident import common, estimation, lib, synthetic_data
 
 __all__ = [
     "synthetic_data",
-    "viz",
-    "metrics",
     "common",
     "estimation",
     "lib",
