@@ -1,0 +1,167 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{courier}
+\geometry{margin=1in}
+
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  breaklines=true,
+  columns=fullflexible,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  captionpos=b,
+  xleftmargin=2pt,
+  xrightmargin=2pt,
+  escapeinside={(*@}{@*)}
+}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{Nondimensionalization of CAR--T model}}\\[6pt]
+    \small Copy-paste-ready \LaTeX\ file containing the derivation and Python code.
+\end{center}
+
+\bigskip
+
+\section*{Dimensional model (clean / explicit)}
+The dimensional model (as in the notebook) is
+\begin{align}
+\frac{dT}{dt} &= r\,T\!\left(1-\frac{T}{K}\right) - \kappa\frac{C}{C+C_{50}}\,T,
+\label{eq:T_dim}\\[6pt]
+\frac{dC}{dt} &= p\,C\cdot\frac{T^{h_1}}{T^{h_1}+T_{50,1}^{h_1}}
+\;-\; \ell\,C \;-\; \delta_C C \;-\; q\,C\cdot\frac{T/C}{T/C + s},
+\label{eq:C_dim}\\[6pt]
+\frac{dM}{dt} &= \ell\,C - b\,M\frac{T^{h_2}}{T^{h_2}+T_{50,2}^{h_2}} - \delta_M M.
+\label{eq:M_dim}
+\end{align}
+
+\medskip
+
+\section*{Choice of characteristic scales}
+We choose the characteristic scales as discussed in the meeting and notes:
+\[
+\text{Tumor scale: } K,\qquad
+\text{Effector scale: } C_{50},\qquad
+\text{Memory scale: } C_{50},\qquad
+\text{Time scale: } \tau = \frac{1}{r}.
+\]
+Define the dimensionless time and variables
+\[
+s = r t,\qquad
+x(s)=\frac{T(t)}{K},\qquad
+y(s)=\frac{C(t)}{C_{50}},\qquad
+z(s)=\frac{M(t)}{C_{50}}.
+\]
+Therefore \(\dfrac{d}{dt} = r\,\dfrac{d}{ds}\).
+
+\bigskip
+
+\section*{Tumor equation (nondimensionalization)}
+Starting from \eqref{eq:T_dim}
+\[
+\frac{dT}{dt} = rT\left(1-\frac{T}{K}\right) - \kappa\frac{C}{C + C_{50}}T.
+\]
+Substitute \(T=Kx\), \(C=C_{50}y\) and divide by \(rK\). Define
+\[
+\alpha := \frac{\kappa}{r}.
+\]
+This yields
+\[
+\boxed{\displaystyle \frac{dx}{ds} = x(1-x) - \alpha\,\frac{y}{1+y}\,x.}
+\]
+
+\bigskip
+
+\section*{Effector (C) equation (nondimensionalization)}
+Starting from \eqref{eq:C_dim}
+\[
+\frac{dC}{dt} = p\,C\cdot\frac{T^{h_1}}{T^{h_1}+T_{50,1}^{h_1}} - \ell\,C - \delta_C C - q\,C\cdot\frac{T/C}{T/C + s}.
+\]
+Divide by \(r C_{50}\) and substitute the scaled variables.
+Define the dimensionless groups
+\[
+\beta := \frac{p}{r},\quad
+\lambda := \frac{\ell}{r},\quad
+\delta_c := \frac{\delta_C}{r},\quad
+\gamma := \frac{q}{r}.
+\]
+Also set
+\[
+\theta_1 := \frac{T_{50,1}}{K}.
+\]
+Rewrite the exhaustion-like ratio:
+\[
+\frac{T/C}{T/C + s}
+= \frac{Kx/(C_{50}y)}{Kx/(C_{50}y) + s}
+= \frac{x}{x + \mu\,y},\qquad
+\mu := \frac{s\,C_{50}}{K}.
+\]
+Therefore the nondimensional effector equation is
+\[
+\boxed{\displaystyle
+\frac{dy}{ds} = \beta\, y\cdot\frac{x^{h_1}}{x^{h_1}+\theta_1^{h_1}} - (\lambda + \delta_c)\,y - \gamma\, y\cdot\frac{x}{x+\mu y}.}
+\]
+
+\bigskip
+
+\section*{Memory (M) equation (nondimensionalization)}
+Starting from \eqref{eq:M_dim}
+\[
+\frac{dM}{dt} = \ell\,C - b\,M\frac{T^{h_2}}{T^{h_2}+T_{50,2}^{h_2}} - \delta_M M.
+\]
+Divide by \(r C_{50}\) and define
+\[
+b' := \frac{b}{r},\quad \delta_m := \frac{\delta_M}{r},\quad \theta_2 := \frac{T_{50,2}}{K}.
+\]
+We obtain
+\[
+\boxed{\displaystyle
+\frac{dz}{ds} = \lambda\, y - b'\, z\cdot\frac{x^{h_2}}{x^{h_2} + \theta_2^{h_2}} - \delta_m\, z.}
+\]
+
+\bigskip
+
+\section*{Final nondimensional system}
+Collecting all three equations:
+\[
+\boxed{\begin{aligned}
+\frac{dx}{ds} &= x(1-x) - \alpha\,\frac{y}{1+y}\,x,\\[6pt]
+\frac{dy}{ds} &= \beta\, y\cdot\frac{x^{h_1}}{x^{h_1}+\theta_1^{h_1}} - (\lambda + \delta_c)\,y - \gamma\, y\cdot\frac{x}{x+\mu y},\\[6pt]
+\frac{dz}{ds} &= \lambda\, y - b'\, z\cdot\frac{x^{h_2}}{x^{h_2} + \theta_2^{h_2}} - \delta_m\, z.
+\end{aligned}}
+\]
+
+\subsection*{Dimensionless parameter definitions}
+\[
+\begin{aligned}
+\alpha &= \dfrac{\kappa}{r}, &\quad
+\beta &= \dfrac{p}{r}, &\quad
+\lambda &= \dfrac{\ell}{r},\\[4pt]
+\delta_c &= \dfrac{\delta_C}{r}, &\quad
+\delta_m &= \dfrac{\delta_M}{r}, &\quad
+\gamma &= \dfrac{q}{r},\\[4pt]
+b' &= \dfrac{b}{r}, &\quad
+\theta_i &= \dfrac{T_{50,i}}{K}\ (i=1,2), &\quad
+\mu &= \dfrac{s\,C_{50}}{K}.
+\end{aligned}
+\]
+
+\bigskip
+
+\section*{Assumptions / notes}
+\begin{itemize}
+  \item Time was nondimensionalized with \(\tau = 1/r\). Choosing another time scale (e.g. \(1/p\)) is straightforward.
+  \item Both \(C\) and \(M\) were scaled by \(C_{50}\) for simplicity.
+  \item Hill functions are dimensionless because \(T\) was normalized by \(K\).
+  \item The exhaustion-like term was rewritten as \(\dfrac{x}{x+\mu y}\). If the original form differs, change the algebra accordingly.
+\end{itemize}
+
+\end{document}
