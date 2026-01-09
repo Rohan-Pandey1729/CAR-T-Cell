@@ -1,0 +1,99 @@
+<DATAFILE>
+
+[FILEINFO]
+file={path='../../combined_data.csv'}
+delimiter = comma
+header={time, observation, id, observation_id, observation_type}
+
+[CONTENT]
+time = {use=time}
+observation = {use=observation, yname={'0', '1'}, type={continuous, continuous}}
+id = {use=identifier}
+observation_id = {use=observationtype}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {Cef0_pop, omega_Cef0, Cef50_pop, omega_Cef50, Cm0_pop, omega_Cm0, K_pop, omega_K, T0_pop, omega_T0, T50_pop, omega_T50, delta_ef_pop, omega_delta_ef, delta_m_pop, omega_delta_m, h_pop, omega_h, kappa_pop, omega_kappa, l_pop, omega_l, p_pop, omega_p, q_pop, omega_q, r_pop, omega_r}
+
+DEFINITION:
+Cef0 = {distribution=logNormal, typical=Cef0_pop, sd=omega_Cef0}
+Cef50 = {distribution=logNormal, typical=Cef50_pop, sd=omega_Cef50}
+Cm0 = {distribution=logNormal, typical=Cm0_pop, sd=omega_Cm0}
+K = {distribution=logNormal, typical=K_pop, sd=omega_K}
+T0 = {distribution=logNormal, typical=T0_pop, sd=omega_T0}
+T50 = {distribution=logNormal, typical=T50_pop, sd=omega_T50}
+delta_ef = {distribution=logNormal, typical=delta_ef_pop, sd=omega_delta_ef}
+delta_m = {distribution=logNormal, typical=delta_m_pop, sd=omega_delta_m}
+h = {distribution=logNormal, typical=h_pop, sd=omega_h}
+kappa = {distribution=logNormal, typical=kappa_pop, sd=omega_kappa}
+l = {distribution=logNormal, typical=l_pop, sd=omega_l}
+p = {distribution=logNormal, typical=p_pop, sd=omega_p}
+q = {distribution=logNormal, typical=q_pop, sd=omega_q}
+r = {distribution=logNormal, typical=r_pop, sd=omega_r}
+
+[LONGITUDINAL]
+input = {a0, b0, a1, b1}
+
+file = 'model.txt'
+
+DEFINITION:
+y0 = {distribution=normal, prediction=TT, errorModel=combined1(a0, b0)}
+y1 = {distribution=normal, prediction=CC, errorModel=combined1(a1, b1)}
+
+<FIT>
+data = {'0', '1'}
+model = {y0, y1}
+
+<PARAMETER>
+Cef0_pop = {value=100000, method=MLE}
+Cef50_pop = {value=500000, method=MLE}
+Cm0_pop = {value=1, method=MLE}
+K_pop = {value=6000000000, method=MLE}
+T0_pop = {value=1000000, method=MLE}
+T50_pop = {value=400000, method=MLE}
+a0 = {value=1, method=MLE}
+a1 = {value=1, method=MLE}
+b0 = {value=0.3, method=MLE}
+b1 = {value=0.3, method=MLE}
+c0 = {value=1, method=FIXED}
+c1 = {value=1, method=FIXED}
+delta_ef_pop = {value=2, method=MLE}
+delta_m_pop = {value=0.02, method=MLE}
+h_pop = {value=1, method=MLE}
+kappa_pop = {value=2, method=MLE}
+l_pop = {value=0.01, method=MLE}
+omega_Cef0 = {value=1, method=MLE}
+omega_Cef50 = {value=1, method=MLE}
+omega_Cm0 = {value=1, method=MLE}
+omega_K = {value=1, method=MLE}
+omega_T0 = {value=1, method=MLE}
+omega_T50 = {value=1, method=MLE}
+omega_delta_ef = {value=1, method=MLE}
+omega_delta_m = {value=1, method=MLE}
+omega_h = {value=1, method=MLE}
+omega_kappa = {value=1, method=MLE}
+omega_l = {value=1, method=MLE}
+omega_p = {value=1, method=MLE}
+omega_q = {value=1, method=MLE}
+omega_r = {value=1, method=MLE}
+p_pop = {value=6, method=MLE}
+q_pop = {value=0.000001, method=MLE}
+r_pop = {value=0.01, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(run = false,method = StochasticApproximation)
+logLikelihood(run = false,method = ImportanceSampling)
+
+[PLOTS]
+run = true
+plots = {indfits = {selected = true}, parameterdistribution = {selected = true}, obspred = {selected = true}, covariancemodeldiagnosis = {selected = true}, covariatemodeldiagnosis = {selected = true}, vpc = {selected = true}, residualsscatter = {selected = true}, residualsdistribution = {selected = true}, randomeffects = {selected = true}, saemresults = {selected = true}}
+
+[SETTINGS]
+GLOBAL:
+exportpath = 'notebook_model_1'
+

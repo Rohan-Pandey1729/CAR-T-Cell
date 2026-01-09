@@ -1,0 +1,15 @@
+parameter,statistics,p-value,test
+r,0.927158,0.491488,Shapiro-Wilk
+K,0.937399,0.910721,Shapiro-Wilk
+p,0.940416,0.8784,Shapiro-Wilk
+T50,0.914698,0.246563,Shapiro-Wilk
+h,0.924179,0.352423,Shapiro-Wilk
+l,0.909051,0.231472,Shapiro-Wilk
+delta_ef,0.935468,0.854941,Shapiro-Wilk
+delta_m,0.944112,0.898359,Shapiro-Wilk
+kappa,0.930091,0.589212,Shapiro-Wilk
+Cef50,0.941133,0.843252,Shapiro-Wilk
+q,0.912957,0.171423,Shapiro-Wilk
+T0,0.922092,0.506133,Shapiro-Wilk
+Cef0,0.911904,0.260245,Shapiro-Wilk
+Cm0,0.936974,0.828677,Shapiro-Wilk
