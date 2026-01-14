@@ -1,8 +1,9 @@
 from typing import Any
 
-import numpy as np
 from numpy.typing import ArrayLike
+
 from pident.common.models import ODEModel
+
 
 def _liu_et_al_ode_func(t: float, y: Any, params: Any) -> ArrayLike:
     nP, nTA, nTN, nN = y
@@ -16,7 +17,7 @@ def _liu_et_al_ode_func(t: float, y: Any, params: Any) -> ArrayLike:
     return [dnP_dt, dnTA_dt, dnTN_dt, dnN_dt]
 
 
-liu_et_al_param_names = [
+_liu_et_al_param_names = [
     "rP",
     "rTA",
     "lTA",
@@ -33,12 +34,12 @@ liu_et_al_param_names = [
     "KN",
 ]
 
-liu_et_al_obs_var_names = ["nP", "nTA", "nTN", "nN"]
+_liu_et_al_obs_var_names = ["nP", "nTA", "nTN", "nN"]
 
 liu_et_al_model = ODEModel(
     _liu_et_al_ode_func,
-    liu_et_al_param_names.copy(),
-    liu_et_al_obs_var_names.copy(),
+    _liu_et_al_param_names,
+    _liu_et_al_obs_var_names,
 )
 
 
@@ -53,7 +54,7 @@ def _liu_et_al_no_nN_ode_func(t: float, y: Any, params: Any) -> ArrayLike:
     return [dnP_dt, dnTA_dt, dnTN_dt]
 
 
-liu_et_al_no_nN_param_names = [
+_liu_et_al_no_nN_param_names = [
     "rP",
     "rTA",
     "lTA",
@@ -66,10 +67,10 @@ liu_et_al_no_nN_param_names = [
     "kA",
 ]
 
-liu_et_al_no_nN_obs_var_names = ["nP", "nTA", "nTN"]
+_liu_et_al_no_nN_obs_var_names = ["nP", "nTA", "nTN"]
 
 liu_et_al_no_nN_model = ODEModel(
     _liu_et_al_no_nN_ode_func,
-    liu_et_al_no_nN_param_names.copy(),
-    liu_et_al_no_nN_obs_var_names.copy(),
+    _liu_et_al_no_nN_param_names,
+    _liu_et_al_no_nN_obs_var_names,
 )

@@ -52,6 +52,14 @@ class ODEModel:
         self._param_names = param_names
         self._obs_var_names = obs_var_names
 
+    @property
+    def param_names(self) -> list[str]:
+        return self._param_names
+
+    @property
+    def obs_var_names(self) -> list[str]:
+        return self._obs_var_names
+
     def get_ground_truth(
         self,
         param_values: dict[str, float] | ArrayLike,

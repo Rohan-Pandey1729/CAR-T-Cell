@@ -2,7 +2,9 @@ from typing import Any
 
 import numpy as np
 from numpy.typing import ArrayLike
+
 from pident.common.models import ODEModel
+
 
 def _owens_bozic_ode_func(t: float, y: Any, params: Any) -> ArrayLike:
     T, E, C, M = y
@@ -50,7 +52,7 @@ def _owens_bozic_ode_func(t: float, y: Any, params: Any) -> ArrayLike:
     return [dT_dt, dE_dt, dC_dt, dM_dt]
 
 
-owens_bozic_param_names = [
+_owens_bozic_param_names = [
     "a",
     "b_inv",
     "dE",
@@ -72,11 +74,10 @@ owens_bozic_param_names = [
     "gamma",
 ]
 
-owens_bozic_obs_var_names = ["T", "E", "C", "M"]
+_owens_bozic_obs_var_names = ["T", "E", "C", "M"]
 
 owens_bozic_model = ODEModel(
     _owens_bozic_ode_func,
-    owens_bozic_param_names.copy(),
-    owens_bozic_obs_var_names.copy(),
+    _owens_bozic_param_names,
+    _owens_bozic_obs_var_names,
 )
-
