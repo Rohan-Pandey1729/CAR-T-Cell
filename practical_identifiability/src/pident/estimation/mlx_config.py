@@ -4,25 +4,39 @@ from pathlib import Path
 from string import Template
 from typing import Literal
 
+from pident.common.models import ODEModel
+
 MlxParamDistName = Literal["normal", "logNormal"]
+MlxResidualErrorDistName = Literal["normal", "logNormal"]
+MlxResidualErrorModelType = Literal[
+    "constant", "proportional", "combined1", "combined2"
+]
 
 
 @dataclass
-class MlxParam:
+class MlxParamConfig:
     """
-    Only supports MLE estimation or fixed
+    Configuration for a model parameter (excluding name, which is a dict key).
+    - dist_name: Distribution name for the population distribution. Must be "normal" or "logNormal".
+    - init_est_pop: Initial estimate for the population parameter median.
+    - init_est_omega: Initial estimate for the omega parameter for this model parameter.
+    - is_fixed: If True, this parameter is fixed during estimation. Otherwise, it is estimated via MLE.
     """
 
-    name: str
     dist_name: MlxParamDistName
     init_est_pop: float
-    init_est_sd: float
+    init_est_omega: float
     is_fixed: bool
 
 
 @dataclass
-class MlxErrorModelParam:
-    """Only supports MLE estimation or fixed"""
+class MlxResidualErrorParamConfig:
+    """
+    Configuration for a residual error parameter.
+    - name: Name of the residual error parameter.
+    - init_est: Initial estimate for the residual error parameter.
+    - is_fixed: If True, this parameter is fixed during estimation. Otherwise, it is estimated via MLE.
+    """
 
     name: str
     init_est: float
@@ -30,16 +44,23 @@ class MlxErrorModelParam:
 
 
 @dataclass
-class _MlxObsError:
-    error_model_name: str
-    error_model_dist_name: str
-    error_params: list[MlxErrorModelParam]
+class MlxObsVarConfig:
+    """
+    Configuration data for an observation variable (excluding name (dict key) and id (inferred)).
+    - pred_name: Name of the prediction variable for this observation variable in the model file.
+    - ic_config: Configuration for the initial condition parameter for this observation variable.
+    - residual_error_model_type: Type of residual error model to use for this observation variable.
+        Must be one of "constant", "proportional", "combined1", or "combined2".
+    - residual_error_dist_name: Distribution name for the residual error model. Must be "normal" or "logNormal".
+    - residual_error_params: List of configurations for each residual error parameter for this observation variable.
+        Must be consistent with residual_error_model_type.
+    """
 
-
-@dataclass
-class MlxObsVar(MlxParam, _MlxObsError):
-    id: int
     pred_name: str
+    ic_config: MlxParamConfig
+    residual_error_model_type: MlxResidualErrorModelType
+    residual_error_dist_name: MlxResidualErrorDistName
+    residual_error_params: list[MlxResidualErrorParamConfig]
 
 
 mlxtran_template = Template(
@@ -104,13 +125,69 @@ def generate_mlxtran_file(
     output_path: Path,
     data_csv_path: Path,
     mlx_model_path: Path,
-    model_params: list[MlxParam],
-    obs_vars: list[MlxObsVar],
-    hidden_obs_var_ids: list[int],
-):
+    ode_model: ODEModel,
+    model_params: dict[str, MlxParamConfig],
+    obs_vars: dict[str, MlxObsVarConfig],
+    hidden_obs_var_names: list[str] | None = None,
+) -> None:
+    """
+    Generate an .mlxtran configuration file from ODE model parameters and observation variables.
+
+    Args:
+        output_path: Path where the .mlxtran file will be written
+        data_csv_path: Path to the input data CSV file
+        mlx_model_path: Path to the MONOLIX model file (e.g., owens_bozic.txt)
+        ode_model: ODEModel instance providing canonical parameter and observation variable names
+        model_params: Dict mapping parameter names to config values. All keys must match ode_model.param_names.
+        obs_vars: Dict mapping observation variable names to config values. All keys must match ode_model.obs_var_names.
+        hidden_obs_var_names: Optional list of observation variable names to exclude from the fit.
+            All names must be valid observation variables in ode_model.obs_var_names.
+
+    Raises:
+        ValueError: If output_path does not end with .mlxtran, or if model_params/obs_vars dicts
+            have missing/extra keys compared to ode_model properties, or if hidden_obs_var_names
+            contains invalid variable names.
+
+    Note:
+        Observation variable IDs are assigned by enumerating ode_model.obs_var_names. The CSV data file's
+        'observation_id' column must use sequential integer values (0, 1, 2, ...) corresponding to this order.
+    """
     if not output_path.name.endswith(".mlxtran"):
         raise ValueError(
             f"Expected output_path to be an .mlxtran file, but got {output_path}"
+        )
+
+    # Validate model_params against ode_model
+    missing_params = set(ode_model.param_names) - set(model_params.keys())
+    extra_params = set(model_params.keys()) - set(ode_model.param_names)
+    if missing_params:
+        raise ValueError(
+            f"model_params dict is missing keys for ODE model parameters: {missing_params}"
+        )
+    if extra_params:
+        raise ValueError(
+            f"model_params dict has extra keys not in ODE model parameters: {extra_params}"
+        )
+
+    # Validate obs_vars against ode_model
+    missing_obs_vars = set(ode_model.obs_var_names) - set(obs_vars.keys())
+    extra_obs_vars = set(obs_vars.keys()) - set(ode_model.obs_var_names)
+    if missing_obs_vars:
+        raise ValueError(
+            f"obs_vars dict is missing keys for ODE model observation variables: {missing_obs_vars}"
+        )
+    if extra_obs_vars:
+        raise ValueError(
+            f"obs_vars dict has extra keys not in ODE model observation variables: {extra_obs_vars}"
+        )
+
+    # Validate and normalize hidden_obs_var_names
+    if hidden_obs_var_names is None:
+        hidden_obs_var_names = []
+    invalid_hidden = set(hidden_obs_var_names) - set(ode_model.obs_var_names)
+    if invalid_hidden:
+        raise ValueError(
+            f"hidden_obs_var_names contains invalid observation variable names: {invalid_hidden}"
         )
 
     # everything that needs to be generated
@@ -122,35 +199,37 @@ def generate_mlxtran_file(
     FIT_model = []
     PARAMETER_items_ = []
 
-    for model_param in model_params:
-        name_pop = f"{model_param.name}_pop"
-        omega_name = f"omega_{model_param.name}"
+    for param_name in ode_model.param_names:
+        param_config = model_params[param_name]
+        name_pop = f"{param_name}_pop"
+        omega_name = f"omega_{param_name}"
 
         INDIVIDUAL_input.append(name_pop)
         INDIVIDUAL_input.append(omega_name)
         INDIV_DEFINITION_items_.append(
-            f"{model_param.name} = "
-            + f"{{distribution={model_param.dist_name}, "
+            f"{param_name} = "
+            + f"{{distribution={param_config.dist_name}, "
             + f"typical={name_pop}, "
-            + (f"sd={omega_name}}}" if not model_param.is_fixed else "no-variability}")
+            + (f"sd={omega_name}}}" if not param_config.is_fixed else "no-variability}")
         )
         PARAMETER_items_.append(
             f"{name_pop} = "
-            + f"{{value={model_param.init_est_pop}, "
-            + f"method={'MLE' if not model_param.is_fixed else 'FIXED'}}}"
+            + f"{{value={param_config.init_est_pop}, "
+            + f"method={'MLE' if not param_config.is_fixed else 'FIXED'}}}"
         )
-        if not model_param.is_fixed:
+        if not param_config.is_fixed:
             PARAMETER_items_.append(
-                f"{omega_name} = {{value={model_param.init_est_sd}, method=MLE}}"
+                f"{omega_name} = {{value={param_config.init_est_omega}, method=MLE}}"
             )
 
-    for obs_var in obs_vars:
-        name0 = f"{obs_var.name}0"
+    for obs_var_id, obs_var_name in enumerate(ode_model.obs_var_names):
+        obs_var_config = obs_vars[obs_var_name]
+        name0 = f"{obs_var_name}0"
         name_pop = f"{name0}_pop"
         omega_name = f"omega_{name0}"
         nonfixed_error_param_names_id = [
-            f"{error_param.name}{obs_var.id}"
-            for error_param in obs_var.error_params
+            f"{error_param.name}{obs_var_id}"
+            for error_param in obs_var_config.residual_error_params
             if not error_param.is_fixed
         ]
 
@@ -158,33 +237,37 @@ def generate_mlxtran_file(
         INDIVIDUAL_input.append(omega_name)
         INDIV_DEFINITION_items_.append(
             f"{name0} = "
-            + f"{{distribution={obs_var.dist_name}, "
+            + f"{{distribution={obs_var_config.ic_config.dist_name}, "
             + f"typical={name_pop}, "
-            + (f"sd={omega_name}}}" if not obs_var.is_fixed else "no-variability}")
+            + (
+                f"sd={omega_name}}}"
+                if not obs_var_config.ic_config.is_fixed
+                else "no-variability}"
+            )
         )
-        if obs_var.id not in hidden_obs_var_ids:
+        if obs_var_name not in hidden_obs_var_names:
             LONGITUDINAL_input.extend(nonfixed_error_param_names_id)
             LONG_DEFINITION_items_.append(
-                f"y{obs_var.id} = "
-                + f"{{distribution={obs_var.error_model_dist_name}, "
-                + f"prediction={obs_var.pred_name}, "
-                + f"errorModel={obs_var.error_model_name}({', '.join(nonfixed_error_param_names_id)})}}"
+                f"y{obs_var_id} = "
+                + f"{{distribution={obs_var_config.residual_error_dist_name}, "
+                + f"prediction={obs_var_config.pred_name}, "
+                + f"errorModel={obs_var_config.residual_error_model_type}({', '.join(nonfixed_error_param_names_id)})}}"
             )
-            FIT_data.append(obs_var.id)
-            FIT_model.append(f"y{obs_var.id}")
+            FIT_data.append(obs_var_id)
+            FIT_model.append(f"y{obs_var_id}")
         PARAMETER_items_.append(
             f"{name_pop} = "
-            + f"{{value={obs_var.init_est_pop}, "
-            + f"method={'MLE' if not obs_var.is_fixed else 'FIXED'}}}"
+            + f"{{value={obs_var_config.ic_config.init_est_pop}, "
+            + f"method={'MLE' if not obs_var_config.ic_config.is_fixed else 'FIXED'}}}"
         )
-        if not obs_var.is_fixed:
+        if not obs_var_config.ic_config.is_fixed:
             PARAMETER_items_.append(
-                f"{omega_name} = {{value={obs_var.init_est_sd}, method=MLE}}"
+                f"{omega_name} = {{value={obs_var_config.ic_config.init_est_omega}, method=MLE}}"
             )
-        if obs_var.id not in hidden_obs_var_ids:
-            for error_param in obs_var.error_params:
+        if obs_var_name not in hidden_obs_var_names:
+            for error_param in obs_var_config.residual_error_params:
                 PARAMETER_items_.append(
-                    f"{error_param.name}{obs_var.id} = "
+                    f"{error_param.name}{obs_var_id} = "
                     + f"{{value={error_param.init_est}, "
                     + f"method={'FIXED' if error_param.is_fixed else 'MLE'}}}"
                 )
