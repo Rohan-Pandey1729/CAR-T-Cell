@@ -27,9 +27,17 @@ def run_monolix_estimation(
 
     Raises:
         RuntimeError: If MONOLIX_PATH is not set (from constants.py)
+
+    Note:
+        If running this in a notebook and it returns very quickly, Monolix probably
+        returned an error. Try running the command from your terminal to see what's wrong.
+
+        On the other hand it seems like the Monolix process returns before it stops running.
+        You should code accordingly if using this in a script.
     """
     mlxtran_path = Path(mlxtran_path).resolve()
     output_path = Path(output_path).resolve()
+    output_path.mkdir(parents=True, exist_ok=True)
 
     if not mlxtran_path.exists():
         raise FileNotFoundError(f"Monolix configuration file not found: {mlxtran_path}")

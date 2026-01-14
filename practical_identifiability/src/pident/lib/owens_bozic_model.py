@@ -12,9 +12,7 @@ def _owens_bozic_ode_func(t: float, y: Any, params: Any) -> ArrayLike:
 
     b = 1 / b_inv
 
-    T = max(T, 0)
     C = max(C, 0)
-    E = max(E, 0)
     M = max(M, 0)
 
     tol = 1e-10

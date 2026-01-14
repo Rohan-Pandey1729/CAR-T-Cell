@@ -7,8 +7,9 @@ from abc import ABC, abstractmethod
 import numpy as np
 from numpy.random import Generator
 from numpy.typing import ArrayLike
-from pident.common.exceptions import DomainError
 from scipy.stats import lognorm, truncnorm
+
+from pident.common.exceptions import DomainError
 
 
 class SamplingError(RuntimeError):
@@ -41,6 +42,22 @@ class UnivarDist(ABC):
         """
         Returns a recommended interval to plot the pdf on.
         """
+        pass
+
+    @property
+    @abstractmethod
+    def median(self) -> float:
+        """
+        Returns the median of this distribution.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def mlx_omega(self) -> float:
+        """
+        Returns the Monolix omega parameter for this distribution.
+        """
 
 
 class Constant(UnivarDist):
@@ -67,6 +84,14 @@ class Constant(UnivarDist):
         # assumes value is positive
         return (0.0, 2 * self._val)
 
+    @property
+    def median(self) -> float:
+        return self._val
+
+    @property
+    def mlx_omega(self) -> float:
+        return 0.0
+
 
 class TruncNorm(UnivarDist):
     def __init__(
@@ -88,6 +113,8 @@ class TruncNorm(UnivarDist):
         self._rv = truncnorm(loc=mean, scale=mlx_omega, a=lower_bound, b=upper_bound)
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
+        self._mean = mean
+        self._mlx_omega = mlx_omega
 
     def sample(self, rng: Generator) -> float:
         return self._rv.rvs(random_state=rng)
@@ -111,6 +138,14 @@ class TruncNorm(UnivarDist):
         if self._upper_bound < np.inf:
             high = self._upper_bound + WIDTH_FACTOR * no_trunc_width
         return (low, high)
+
+    @property
+    def median(self) -> float:
+        return self._rv.ppf(0.5)
+
+    @property
+    def mlx_omega(self) -> float:
+        return self._mlx_omega
 
 
 class TruncLognorm(UnivarDist):
@@ -146,6 +181,7 @@ class TruncLognorm(UnivarDist):
             self._rv.cdf(upper_bound) - self._rv.cdf(lower_bound)
         )  # pdf normalization factor
         self._median = median
+        self._mlx_omega = mlx_omega
 
     def sample(self, rng: Generator) -> float:
         for _ in range(TruncLognorm._MAX_ITER):
@@ -184,3 +220,11 @@ class TruncLognorm(UnivarDist):
         if self._upper_bound < np.inf:
             high = min(high, self._upper_bound + WIDTH_FACTOR * no_trunc_width)
         return (low, min(high, MAX_DISTORTION_FACTOR * self._median))
+
+    @property
+    def median(self) -> float:
+        return self._median
+
+    @property
+    def mlx_omega(self) -> float:
+        return self._mlx_omega

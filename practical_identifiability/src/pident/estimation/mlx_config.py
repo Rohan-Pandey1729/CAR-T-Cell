@@ -273,13 +273,13 @@ def generate_mlxtran_file(
                 )
 
     mlxtran_text = mlxtran_template.substitute(
-        csv_path=str(data_csv_path),
+        csv_path=str(data_csv_path.resolve()),
         CONTENT_observation_yname=", ".join(f"'{id}'" for id in FIT_data),
         CONTENT_observation_type=", ".join(["continuous"] * len(FIT_data)),
         INDIVIDUAL_input=", ".join(INDIVIDUAL_input),
         INDIVIDUAL_DEFINITION="\n".join(INDIV_DEFINITION_items_),
         LONGITUDINAL_input=", ".join(LONGITUDINAL_input),
-        model_path=str(mlx_model_path),
+        model_path=str(mlx_model_path.resolve()),
         LONGITUDINAL_DEFINITION="\n".join(LONG_DEFINITION_items_),
         FIT_data=", ".join(f"'{id}'" for id in FIT_data),
         FIT_model=", ".join(FIT_model),

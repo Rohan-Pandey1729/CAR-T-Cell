@@ -89,7 +89,9 @@ def parse_estimated_parameters(
         This function validates that all parameters in ode_model.param_names and all
         initial conditions (inferred as obs_var_names with "0" suffix) are present.
     """
-    param_file = results_dir / "estimatedIndividualParameters.txt"
+    param_file = (
+        results_dir / "IndividualParameters" / "estimatedIndividualParameters.txt"
+    )
 
     if not param_file.exists():
         raise FileNotFoundError(

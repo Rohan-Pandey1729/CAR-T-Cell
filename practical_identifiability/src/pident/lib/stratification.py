@@ -20,8 +20,10 @@ def stratify_by_final_value(
     Stratify individuals into two groups based on final value of a variable.
 
     Args:
-        ground_truth_values: List of 1D arrays, one per individual, containing values
-            at different timepoints for a single variable
+        ground_truth_values: List of values/arrays, one per individual. Can be:
+            - Scalar values (float, np.float64, etc.)
+            - 1D arrays containing values at different timepoints for a single variable
+            - Multi-dimensional arrays where var_index selects the variable
         threshold: Threshold value for classification
         var_index: Index of the variable to use (default: 0, for use when values
             contain multiple variables)
@@ -37,9 +39,13 @@ def stratify_by_final_value(
     outcomes = []
     for values in ground_truth_values:
         values_arr = np.asarray(values)
-        # Handle both 1D arrays and higher-dimensional arrays
-        if values_arr.ndim == 1:
+        # Handle scalar values (0-dimensional arrays)
+        if values_arr.ndim == 0:
+            final_value = float(values_arr)
+        # Handle 1D arrays
+        elif values_arr.ndim == 1:
             final_value = values_arr[-1]
+        # Handle higher-dimensional arrays
         else:
             final_value = values_arr[var_index, -1]
 
