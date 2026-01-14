@@ -1,3 +1,13 @@
+"""
+Liu et al. CAR-T cell dynamics model.
+
+Implements the CAR-T cell and tumor dynamics model from Liu et al in papers/LiuetalwithSupp.pdf
+
+Provides two variants:
+- liu_et_al_model: Full 4-variable model (nP, nTA, nTN, nN)
+- liu_et_al_no_nN_model: Reduced 3-variable model without nN
+"""
+
 from typing import Any
 
 from numpy.typing import ArrayLike

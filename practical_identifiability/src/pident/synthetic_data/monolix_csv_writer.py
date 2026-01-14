@@ -1,3 +1,10 @@
+"""
+Write synthetic trajectories to Monolix-compatible CSV format.
+
+Provides functions to transform synthetic data (ODE solutions with noise)
+into the standardized CSV format required by Monolix for parameter estimation.
+"""
+
 from pathlib import Path
 from typing import Callable
 

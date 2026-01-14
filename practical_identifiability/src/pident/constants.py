@@ -1,3 +1,10 @@
+"""
+Shared constants for the pident package.
+
+Loads environment variables from .env file, including the path to the Monolix
+command-line executable needed for parameter estimation.
+"""
+
 import os
 from pathlib import Path
 

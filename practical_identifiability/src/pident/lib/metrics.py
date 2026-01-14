@@ -1,5 +1,14 @@
 """
-Functions for computing performance metrics comparing true vs estimated parameters.
+Performance metrics for identifiability assessment.
+
+Functions for evaluating the quality of parameter and trajectory estimation
+in practical identifiability studies. Metrics include:
+- Parameter relative error: individual-level parameter recovery accuracy
+- RMS error (linear & log scale): trajectory estimation accuracy
+- Per-variable metrics: variable-specific performance assessment
+
+Used to assess identifiability by comparing synthetic ground truth values
+to Monolix-estimated values.
 """
 
 import numpy as np

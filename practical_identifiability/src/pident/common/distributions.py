@@ -1,5 +1,16 @@
 """
-Provides ways to interact with probability distributions.
+Univariate probability distributions for parameter modeling.
+
+Provides an abstract base class (UnivarDist) for univariate distributions and
+concrete implementations (Constant, TruncNorm, LogNorm) suitable for parameter
+estimation and population modeling in Monolix. Each distribution supports:
+- Sampling via numpy RNG
+- PDF evaluation
+- Median and variance calculations
+- Monolix omega parameter conversion for population variance
+
+Primary use case: Defining prior distributions for parameters in ODE models
+for population-based parameter estimation.
 """
 
 from abc import ABC, abstractmethod

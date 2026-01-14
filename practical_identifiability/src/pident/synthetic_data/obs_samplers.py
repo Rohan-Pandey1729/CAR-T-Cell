@@ -1,10 +1,29 @@
+"""
+Observation sampling from ODE model trajectories.
+
+Functions for subsampling observation schedules from ground truth ODE solutions,
+generating individual-level observation time series for specific variables
+at specified time points.
+
+Used in synthetic data generation to create realistic observation schedules
+(e.g., measurement times in a clinical trial) from continuous ODE solutions.
+"""
+
 from typing import TypedDict
 
 from numpy.typing import ArrayLike
+
 from pident.common.models import GroundTruthFunc
 
 
 class Timeseries(TypedDict):
+    """A single observation variable's time series data.
+
+    Attributes:
+        t: Time points at which observations were collected
+        y: Observed values at each time point
+    """
+
     t: ArrayLike
     y: ArrayLike
 

@@ -1,3 +1,7 @@
+"""
+Owens-Bozic CAR-T cell dynamics model.
+"""
+
 from typing import Any
 
 import numpy as np

@@ -1,5 +1,14 @@
 """
-Functions for stratifying individuals by outcomes or other criteria.
+Stratification utilities for individual outcome classification.
+
+Functions for grouping individuals based on model outcomes, enabling
+outcome-stratified analysis of parameter identifiability. Supports:
+- Threshold-based stratification: classify by final variable values
+- Custom stratification: user-defined classification logic
+- Outcome filtering: extract subsets by outcome group
+
+Used to assess whether parameter identifiability varies across clinical
+outcomes (e.g., complete response vs. progressive disease).
 """
 
 from typing import Callable

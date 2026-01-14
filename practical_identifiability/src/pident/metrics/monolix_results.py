@@ -1,8 +1,14 @@
 """
-Functions for extracting data from Monolix estimation results.
+Parsing and extraction of Monolix parameter estimation results.
 
-Note: These functions have only been tested with Monolix version 2024R1.
-Output formats from other versions may not be compatible.
+Functions for reading Monolix output files (IndividualParameters, convergence status)
+and extracting estimated parameters, initial conditions, and convergence diagnostics.
+
+**Version Compatibility:**
+Tested with Monolix 2024R1. Output formats from other versions may not be compatible.
+
+Used to evaluate parameter recovery in identifiability studies by extracting
+estimated individual parameters for comparison with true synthetic values.
 """
 
 from pathlib import Path
@@ -12,7 +18,14 @@ from pident.common.models import ODEModel
 
 
 class EstimatedParametersResult(NamedTuple):
-    """Result of parsing estimated parameters from Monolix output."""
+    """Parsed estimated parameters from Monolix individual estimation results.
+
+    Attributes:
+        patient_ids: List of patient/individual identifiers from results file
+        param_dicts: List of parameter dictionaries, one per patient.
+            Each dict maps parameter/IC names to statistics dicts
+            (keys: "SAEM", "mean", "mode", "sd" as available)
+    """
 
     patient_ids: list[str]
     param_dicts: list[dict[str, dict[str, float]]]

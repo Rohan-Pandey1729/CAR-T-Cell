@@ -1,3 +1,11 @@
+"""
+ODE model wrapper for numerical integration and parameter management.
+
+Provides ODEModel class that wraps scipy.integrate.solve_ivp to associate
+model parameters and observation variables with human-readable names,
+facilitating parameter estimation workflows.
+"""
+
 from typing import Callable, Literal
 
 import numpy as np

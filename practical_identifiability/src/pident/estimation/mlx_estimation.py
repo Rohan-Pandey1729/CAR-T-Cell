@@ -1,3 +1,10 @@
+"""
+Monolix parameter estimation execution.
+
+Provides functions to run Monolix estimation from Python, managing the
+command-line interface and subprocess lifecycle.
+"""
+
 import subprocess
 from pathlib import Path
 

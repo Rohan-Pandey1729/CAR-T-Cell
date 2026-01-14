@@ -1,3 +1,13 @@
+"""
+Monolix configuration management and .mlxtran file generation.
+
+Provides dataclasses for configuring Monolix parameter estimation and a
+template system for generating Monolix .mlxtran configuration files.
+
+Tested with Monolix version 2024R1. Output formats from other versions
+may not be compatible.
+"""
+
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
