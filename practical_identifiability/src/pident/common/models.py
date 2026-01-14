@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Literal
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -7,6 +7,7 @@ from scipy.integrate import solve_ivp
 # f(t, y, params) -> dy_dt
 ODEFunc = Callable[[float, ArrayLike, ArrayLike], ArrayLike]
 GroundTruthFunc = Callable[[ArrayLike], dict[str, ArrayLike]]
+IntegrationMethod = Literal["RK45", "RK23", "DOP853", "Radau", "BDF", "LSODA"]
 
 
 class DuplicateNameError(ValueError):
@@ -66,6 +67,7 @@ class ODEModel:
         initial_values: dict[str, float] | ArrayLike,
         t_min: float,
         t_max: float,
+        int_method: IntegrationMethod = "LSODA",
     ) -> GroundTruthFunc:
         """
         Returns the ground truth trajectories between times `t_min` and `t_max`
@@ -112,7 +114,7 @@ class ODEModel:
             initial_values,
             args=[param_values],
             dense_output=True,
-            method="LSODA",
+            method=int_method,
         )
 
         def ground_truth(t: ArrayLike) -> dict[str, ArrayLike]:
