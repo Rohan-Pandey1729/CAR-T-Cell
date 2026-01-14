@@ -97,6 +97,9 @@ class ODEModel:
         In both cases, the observation variables that elements of the return value
         correspond to are in the same order as outputted from the differential equation
         implementation for this ODE model.
+
+        The allowable integration methods are those supported by `scipy.integrate.solve_ivp`, specifically:
+        "RK45", "RK23", "DOP853", "Radau", "BDF", and "LSODA".
         """
         if isinstance(param_values, dict):
             param_values = np.array([param_values[name] for name in self._param_names])
