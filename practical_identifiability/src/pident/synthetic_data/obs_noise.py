@@ -1,7 +1,15 @@
+"""
+Add observation noise to synthetic trajectories.
+
+Provides functions and error models for adding realistic noise to
+synthetic trajectories, simulating measurement error in real experimental data.
+"""
+
 from typing import Callable
 
 import numpy as np
 from numpy.random import Generator
+
 from pident.common.distributions import TruncNorm
 from pident.common.exceptions import DomainError
 from pident.synthetic_data.obs_samplers import Timeseries

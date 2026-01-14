@@ -1,0 +1,20 @@
+DESCRIPTION:
+
+[LONGITUDINAL]
+input={r, K, p, T50, h, l, delta_ef, delta_m, kappa, Cef50, q, T0, Cef0, Cm0}
+
+EQUATION:
+odeType = stiff
+T_0 = T0
+Cef_0 = Cef0
+Cm_0 = Cm0
+
+ddt_T = r*T*(1-T/K) - kappa*Cef/(Cef+Cef50)*T
+ddt_Cef = p*(Cef+Cm/10000)*(T^h/(T^h+T50^h)) - l*Cef - delta_ef*Cef
+ddt_Cm = l*Cef - delta_m*Cm
+
+TT = log10(max(T, 1e-2))
+CC = log10(max(Cef + Cm, 1e-2))
+
+OUTPUT:
+output = {TT, CC}

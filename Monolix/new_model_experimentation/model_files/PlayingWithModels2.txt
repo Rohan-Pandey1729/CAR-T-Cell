@@ -1,0 +1,34 @@
+DESCRIPTION:
+
+[LONGITUDINAL]
+input={r, K, p, T50, h, q, l, delta_ef, delta_ex, delta_m, tau, kappa, Cef50, T0, Cef0, Cm0, Cex0}
+
+EQUATION:
+odeType = stiff
+
+T_0 = T0
+Cef_0 = Cef0
+Cm_0 = Cm0
+Cex_0 = Cex0
+
+ddt_T = r*T*(1-T/K) - kappa*Cef/(Cef+Cef50)*T
+
+if t > tau
+	Cm_denom = 1000
+    ddtCef_extra_term = -q*Cef*(T^h/(T^h+T50^h))
+    ddtCex_extra_term = q*Cef*(T^h/(T^h+(2*T50)^h))	; solution: fix exponents if needed
+else
+	Cm_denom = 1
+    ddtCef_extra_term = 0
+   ddtCex_extra_term = 0
+end
+
+ddt_Cef = p*(Cef+Cm/Cm_denom)*(T^h/(T^h+T50^h)) + ddtCef_extra_term - l*Cef - delta_ef*Cef
+ddt_Cex = ddtCex_extra_term - delta_ex*Cex
+ddt_Cm = l*Cef - delta_m*Cm
+
+TT = log10(max(T, 1e-2))
+CC = log10(max(Cef + Cm + Cex, 1e-2))
+
+OUTPUT:
+output = {TT, CC}

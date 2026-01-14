@@ -1,4 +1,12 @@
-from typing import Callable
+"""
+ODE model wrapper for numerical integration and parameter management.
+
+Provides ODEModel class that wraps scipy.integrate.solve_ivp to associate
+model parameters and observation variables with human-readable names,
+facilitating parameter estimation workflows.
+"""
+
+from typing import Callable, Literal
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -7,6 +15,7 @@ from scipy.integrate import solve_ivp
 # f(t, y, params) -> dy_dt
 ODEFunc = Callable[[float, ArrayLike, ArrayLike], ArrayLike]
 GroundTruthFunc = Callable[[ArrayLike], dict[str, ArrayLike]]
+IntegrationMethod = Literal["RK45", "RK23", "DOP853", "Radau", "BDF", "LSODA"]
 
 
 class DuplicateNameError(ValueError):
@@ -52,12 +61,21 @@ class ODEModel:
         self._param_names = param_names
         self._obs_var_names = obs_var_names
 
+    @property
+    def param_names(self) -> list[str]:
+        return self._param_names
+
+    @property
+    def obs_var_names(self) -> list[str]:
+        return self._obs_var_names
+
     def get_ground_truth(
         self,
         param_values: dict[str, float] | ArrayLike,
         initial_values: dict[str, float] | ArrayLike,
         t_min: float,
         t_max: float,
+        int_method: IntegrationMethod = "LSODA",
     ) -> GroundTruthFunc:
         """
         Returns the ground truth trajectories between times `t_min` and `t_max`
@@ -87,6 +105,9 @@ class ODEModel:
         In both cases, the observation variables that elements of the return value
         correspond to are in the same order as outputted from the differential equation
         implementation for this ODE model.
+
+        The allowable integration methods are those supported by `scipy.integrate.solve_ivp`, specifically:
+        "RK45", "RK23", "DOP853", "Radau", "BDF", and "LSODA".
         """
         if isinstance(param_values, dict):
             param_values = np.array([param_values[name] for name in self._param_names])
@@ -104,7 +125,7 @@ class ODEModel:
             initial_values,
             args=[param_values],
             dense_output=True,
-            method="LSODA",
+            method=int_method,
         )
 
         def ground_truth(t: ArrayLike) -> dict[str, ArrayLike]:
