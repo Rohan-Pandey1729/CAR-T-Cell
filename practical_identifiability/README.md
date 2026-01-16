@@ -11,20 +11,14 @@ A Python toolkit for analyzing **practical identifiability** in ODE-based mathem
 
 ### Setup (Recommended: Using Conda)
 
-1. **Navigate to the CAR-T-Cell project directory**:
-
-   ```bash
-   cd CAR-T-Cell
-   ```
-
-2. **Create the conda environment** from the provided `environment.yml`:
+1. **Create the conda environment** from the provided `environment.yml`:
 
    ```bash
    conda env create -f environment.yml
    conda activate cartcell
    ```
 
-3. **Configure Monolix path** in `practical_identifiability/src/pident/.env`:
+2. **Configure Monolix path** in `practical_identifiability/src/pident/.env`:
 
    ```
    MONOLIX_PATH=/path/to/Monolix
